@@ -1,0 +1,94 @@
+<aside class="w-[260px] h-screen flex flex-col py-6 px-4 fixed left-0 top-0 z-50 bg-white/80 backdrop-blur-xl border-r border-gray-100">
+
+  <!-- LOGO -->
+  <div class="flex items-center gap-3 px-3 mb-8">
+    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+      <lucide-icon [img]="icons.logo" class="w-4 h-4" [color]="'white'"></lucide-icon>
+    </div>
+    <div>
+      <span class="text-lg font-bold tracking-tight text-gray-900">Finanzas</span>
+      <span class="text-lg font-bold tracking-tight text-emerald-600">App</span>
+    </div>
+  </div>
+
+  <!-- PRINCIPAL -->
+  <div class="px-2 mb-2">
+    <span class="text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-3">Principal</span>
+  </div>
+  <nav class="flex flex-col gap-1 mb-6">
+
+    <a routerLink="/dashboard" routerLinkActive="active-link"
+       class="nav-item flex items-center gap-3">
+      <lucide-icon [img]="icons.dashboard" class="w-5 h-5 flex-shrink-0" color="currentColor"></lucide-icon>
+      <span class="text-sm">Dashboard</span>
+    </a>
+
+    <a routerLink="/finanzas" routerLinkActive="active-link"
+       class="nav-item flex items-center gap-3">
+      <lucide-icon [img]="icons.wallet" class="w-5 h-5 flex-shrink-0" color="currentColor"></lucide-icon>
+      <span class="text-sm">Finanzas</span>
+    </a>
+
+    <a routerLink="/ingresos" routerLinkActive="active-link"
+       class="nav-item flex items-center gap-3">
+      <lucide-icon [img]="icons.up" class="w-5 h-5 flex-shrink-0" color="currentColor"></lucide-icon>
+      <span class="text-sm">Ingresos</span>
+    </a>
+
+    <a routerLink="/gastos" routerLinkActive="active-link"
+       class="nav-item flex items-center gap-3">
+      <lucide-icon [img]="icons.down" class="w-5 h-5 flex-shrink-0" color="currentColor"></lucide-icon>
+      <span class="text-sm">Gastos</span>
+    </a>
+
+    <a routerLink="/reportes" routerLinkActive="active-link"
+       class="nav-item flex items-center gap-3">
+      <lucide-icon [img]="icons.report" class="w-5 h-5 flex-shrink-0" color="currentColor"></lucide-icon>
+      <span class="text-sm">Reportes</span>
+    </a>
+
+  </nav>
+
+  <!-- CUENTA -->
+  <div class="px-2 mb-2">
+    <span class="text-[11px] font-semibold uppercase tracking-wider text-gray-400 px-3">Cuenta</span>
+  </div>
+  <nav class="flex flex-col gap-1 mb-auto">
+
+    <a routerLink="/configuracion" routerLinkActive="active-link"
+       class="nav-item flex items-center gap-3">
+      <lucide-icon [img]="icons.settings" class="w-5 h-5 flex-shrink-0" color="currentColor"></lucide-icon>
+      <span class="text-sm">Configuración</span>
+    </a>
+
+    <a routerLink="/ayuda" routerLinkActive="active-link"
+       class="nav-item flex items-center gap-3">
+      <lucide-icon [img]="icons.help" class="w-5 h-5 flex-shrink-0" color="currentColor"></lucide-icon>
+      <span class="text-sm">Ayuda</span>
+    </a>
+
+  </nav>
+
+  <!-- BOTTOM -->
+  <div class="mt-auto pt-4 border-t border-gray-100">
+
+    <!-- Cerrar sesión -->
+    <div class="nav-item flex items-center gap-3 text-red-500 hover:!text-red-600 hover:!bg-red-50 cursor-pointer">
+      <lucide-icon [img]="icons.logout" class="w-5 h-5 flex-shrink-0" color="currentColor"></lucide-icon>
+      <span class="text-sm font-medium">Cerrar sesión</span>
+    </div>
+
+    <!-- Perfil -->
+    <div class="mt-4 mx-1 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-transparent border border-emerald-100/60">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-slate-300 flex-shrink-0 ring-2 ring-emerald-200"></div>
+        <div class="min-w-0">
+          <p class="text-sm font-semibold text-gray-800 truncate">Usuario</p>
+          <p class="text-[11px] text-gray-400 truncate">Plan Premium</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</aside>
