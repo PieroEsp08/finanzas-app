@@ -1,0 +1,45 @@
+<div class="card card--accent-top {{ color }} p-6">
+
+  <div class="flex items-start justify-between mb-4">
+
+    <div
+      class="icon-box"
+      [ngClass]="{
+        'bg-emerald-50 text-emerald-600': color === 'emerald',
+        'bg-blue-50 text-blue-600': color === 'blue',
+        'bg-red-50 text-red-500': color === 'red',
+        'bg-amber-50 text-amber-500': color === 'amber'
+      }"
+    >
+      <lucide-icon [img]="icono" class="w-5 h-5" ></lucide-icon>
+
+    </div>
+
+    <span
+      class="badge"
+      [ngClass]="{
+        'bg-emerald-50 text-emerald-600': color === 'emerald',
+        'bg-blue-50 text-blue-600': color === 'blue',
+        'bg-red-50 text-red-500': color === 'red',
+        'bg-amber-50 text-amber-500': color === 'amber'
+      }"
+    >
+      <i class="fa-solid fa-arrow-up text-[10px] mr-1"></i>
+      {{ porcentaje }}
+    </span>
+
+  </div>
+
+  <p class="text-sm text-gray-400 mb-1">
+    {{ titulo }}
+  </p>
+
+  <p class="text-2xl font-bold text-gray-900">
+    {{ monto }}
+  </p>
+
+  <p class="text-xs text-gray-400 mt-2">
+    {{ descripcion }}
+  </p>
+
+</div>

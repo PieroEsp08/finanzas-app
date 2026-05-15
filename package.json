@@ -20,10 +20,12 @@
     "@angular/router": "^21.2.0",
     "@spartan-ng/brain": "^0.0.1-alpha.689",
     "@spartan-ng/ui-core": "^0.0.1-alpha.380",
+    "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide": "^1.14.0",
     "lucide-angular": "^1.0.0",
+    "ng2-charts": "^10.0.0",
     "rxjs": "~7.8.0",
     "tailwind-merge": "^2.6.1",
     "tslib": "^2.3.0"

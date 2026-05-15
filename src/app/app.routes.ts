@@ -5,13 +5,53 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayout,
+
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard) },
-      { path: 'finanzas', loadComponent: () => import('./pages/finanzas/finanzas').then(m => m.Finanzas) },
-      { path: 'ingresos', loadComponent: () => import('./pages/ingresos/ingresos').then(m => m.Ingresos) },
-      { path: 'gastos', loadComponent: () => import('./pages/gastos/gastos').then(m => m.Gastos) },
-      { path: 'reportes', loadComponent: () => import('./pages/reportes/reportes').then(m => m.Reportes) },
-    ]
-  }
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import(
+            './features/dashboard/pages/dashboard-page/dashboard-page'
+          ).then((m) => m.DashboardPage),
+      },
+
+      {
+        path: 'finanzas',
+        loadComponent: () =>
+          import(
+            './features/finanzas/pages/finanzas-page/finanzas-page'
+          ).then((m) => m.FinanzasPage),
+      },
+
+      {
+        path: 'ingresos',
+        loadComponent: () =>
+          import(
+            './features/ingresos/pages/ingresos-page/ingresos-page'
+          ).then((m) => m.IngresosPage),
+      },
+
+      {
+        path: 'gastos',
+        loadComponent: () =>
+          import(
+            './features/gastos/pages/gastos-page/gastos-page'
+          ).then((m) => m.GastosPage),
+      },
+
+      {
+        path: 'reportes',
+        loadComponent: () =>
+          import(
+            './features/reportes/pages/reportes-page/reportes-page'
+          ).then((m) => m.ReportesPage),
+      },
+    ],
+  },
 ];

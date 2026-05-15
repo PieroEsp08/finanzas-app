@@ -1,0 +1,71 @@
+<div class="space-y-10">
+
+  <!-- Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+
+    <app-card-metrica
+      titulo="Balance Total"
+      monto="S/ 24,850"
+      descripcion="Actualizado este mes"
+      porcentaje="12.5%"
+      [icono]="walletIcon"
+      color="blue"
+    />
+
+    <app-card-metrica
+      titulo="Ingresos"
+      monto="S/ 18,200"
+      descripcion="Comparado al mes anterior"
+      porcentaje="8.2%"
+      [icono]="trendingUpIcon"
+      color="emerald"
+    />
+
+    <app-card-metrica
+      titulo="Gastos"
+      monto="S/ 11,420"
+      descripcion="Gastos registrados este mes"
+      porcentaje="3.1%"
+      [icono]="trendingDownIcon"
+      color="red"
+    />
+
+    <app-card-metrica
+      titulo="Ahorros"
+      monto="S/ 7,950"
+      descripcion="Meta mensual alcanzada"
+      porcentaje="15.4%"
+      [icono]="piggyBankIcon"
+      color="amber"
+    />
+
+  </div>
+
+  <!-- Gráfico -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+    <div class="xl:col-span-2">
+      <app-grafico-tendencia-financiera />
+    </div>
+
+    <div class="xl:col-span-1">
+      <app-grafico-gastos-categoria />
+    </div>
+
+  </div>
+
+  <!-- Transacciones y widgets -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+    <div class="xl:col-span-2">
+      <app-transacciones-recientes />
+    </div>
+
+    <div class="xl:col-span-1 flex flex-col gap-6">
+      <app-metas-ahorro /> 
+      <app-presupuesto-categoria />
+    </div>
+
+  </div>
+
+</div>

@@ -1,20 +1,18 @@
-<div class="flex min-h-screen" style="background: #f8faf9;">
+<div class="flex min-h-screen bg-[#f8faf9]">
 
   <!-- Sidebar -->
   <app-sidebar />
 
-  <!-- Main content -->
+  <!-- Contenido -->
   <div class="flex flex-1 flex-col ml-[260px]">
 
     <!-- Header -->
     <app-header />
 
-    <!-- Content -->
+    <!-- Páginas -->
     <main class="flex-1 p-6">
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-      </div>
+      <router-outlet />
 
     </main>
 

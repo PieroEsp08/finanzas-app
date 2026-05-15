@@ -1,0 +1,66 @@
+<div class="bg-white border border-gray-100 rounded-2xl p-6 h-full">
+
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="text-base font-semibold text-gray-800">Transacciones recientes</h3>
+      <p class="text-xs text-gray-400 mt-0.5">Últimos movimientos registrados</p>
+    </div>
+    <button class="text-xs text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
+      Ver todas
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex items-center gap-1 mb-4 bg-gray-50 rounded-lg p-1 w-fit">
+    <button
+      class="px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+      [class.bg-white]="filtroActivo === 'todas'"
+      [class.text-gray-800]="filtroActivo === 'todas'"
+      [class.shadow-sm]="filtroActivo === 'todas'"
+      [class.text-gray-500]="filtroActivo !== 'todas'"
+      (click)="setFiltro('todas')">
+      Todas
+    </button>
+    <button
+      class="px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+      [class.bg-white]="filtroActivo === 'ingresos'"
+      [class.text-gray-800]="filtroActivo === 'ingresos'"
+      [class.shadow-sm]="filtroActivo === 'ingresos'"
+      [class.text-gray-500]="filtroActivo !== 'ingresos'"
+      (click)="setFiltro('ingresos')">
+      Ingresos
+    </button>
+    <button
+      class="px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+      [class.bg-white]="filtroActivo === 'gastos'"
+      [class.text-gray-800]="filtroActivo === 'gastos'"
+      [class.shadow-sm]="filtroActivo === 'gastos'"
+      [class.text-gray-500]="filtroActivo !== 'gastos'"
+      (click)="setFiltro('gastos')">
+      Gastos
+    </button>
+  </div>
+
+  <!-- Lista -->
+  <div class="space-y-1">
+    @for (tx of transaccionesFiltradas; track tx.concepto) {
+      <div class="flex items-center gap-3 px-2 py-3 rounded-xl hover:bg-gray-50 transition-colors">
+
+        <span class="text-2xl flex-shrink-0">{{ tx.icono }}</span>
+
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-800 truncate">{{ tx.concepto }}</p>
+          <p class="text-xs text-gray-400">{{ tx.categoria }} · {{ tx.fecha }}</p>
+        </div>
+
+        <span class="text-sm font-bold flex-shrink-0"
+          [class.text-emerald-600]="tx.tipo === 'ingreso'"
+          [class.text-red-500]="tx.tipo === 'gasto'">
+          {{ tx.tipo === 'ingreso' ? '+' : '-' }}S/ {{ tx.monto.toLocaleString('es-PE') }}
+        </span>
+
+      </div>
+    }
+  </div>
+
+</div>
