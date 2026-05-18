@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CardMetrica } from '../../components/card-metrica/card-metrica';
+import { CardMetrica } from '../../../../shared/components/card-metrica/card-metrica';
 import { GraficoTendenciaFinanciera } from '../../components/grafico-tendencia-financiera/grafico-tendencia-financiera';
 import { GraficoGastosCategoria } from '../../components/grafico-gastos-categoria/grafico-gastos-categoria';
 import { TransaccionesRecientes } from '../../components/transacciones-recientes/transacciones-recientes';

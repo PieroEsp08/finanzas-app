@@ -1,0 +1,431 @@
+{
+  "version": "6.0",
+  "nxVersion": "22.7.1",
+  "pathMappings": {
+    "@spartan-ng/helm/card": [
+      "./libs/ui/card/src/index.ts"
+    ],
+    "@spartan-ng/helm/utils": [
+      "./libs/ui/utils/src/index.ts"
+    ],
+    "@spartan-ng/helm/badge": [
+      "./libs/ui/badge/src/index.ts"
+    ],
+    "@spartan-ng/helm/separator": [
+      "./libs/ui/separator/src/index.ts"
+    ]
+  },
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "finanzas-app": [
+        {
+          "file": ".editorconfig",
+          "hash": "8037249353422744134"
+        },
+        {
+          "file": ".gitignore",
+          "hash": "5024476166486271931"
+        },
+        {
+          "file": ".prettierrc",
+          "hash": "7467919868826279542"
+        },
+        {
+          "file": ".vscode/extensions.json",
+          "hash": "11934160580685414355"
+        },
+        {
+          "file": ".vscode/launch.json",
+          "hash": "17406702432687230417"
+        },
+        {
+          "file": ".vscode/mcp.json",
+          "hash": "11492871017727097845"
+        },
+        {
+          "file": ".vscode/tasks.json",
+          "hash": "11080398893561185157"
+        },
+        {
+          "file": "README.md",
+          "hash": "15364437758517535976"
+        },
+        {
+          "file": "angular.json",
+          "hash": "9852677554472859403"
+        },
+        {
+          "file": "components.json",
+          "hash": "8643432392505072058"
+        },
+        {
+          "file": "libs/ui/badge/src/index.ts",
+          "hash": "1546218413573681085"
+        },
+        {
+          "file": "libs/ui/badge/src/lib/hlm-badge.ts",
+          "hash": "16684519881278062013"
+        },
+        {
+          "file": "libs/ui/card/src/index.ts",
+          "hash": "1177440531744840733"
+        },
+        {
+          "file": "libs/ui/card/src/lib/hlm-card-action.ts",
+          "hash": "1375342372614072766"
+        },
+        {
+          "file": "libs/ui/card/src/lib/hlm-card-content.ts",
+          "hash": "11610524001265827834"
+        },
+        {
+          "file": "libs/ui/card/src/lib/hlm-card-description.ts",
+          "hash": "14779920033950794791"
+        },
+        {
+          "file": "libs/ui/card/src/lib/hlm-card-footer.ts",
+          "hash": "10816943133284796605"
+        },
+        {
+          "file": "libs/ui/card/src/lib/hlm-card-header.ts",
+          "hash": "971208867386805643"
+        },
+        {
+          "file": "libs/ui/card/src/lib/hlm-card-title.ts",
+          "hash": "374477567263015424"
+        },
+        {
+          "file": "libs/ui/card/src/lib/hlm-card.token.ts",
+          "hash": "15684902211056953766"
+        },
+        {
+          "file": "libs/ui/card/src/lib/hlm-card.ts",
+          "hash": "11129143244206043459"
+        },
+        {
+          "file": "libs/ui/separator/src/index.ts",
+          "hash": "5012659381478231670"
+        },
+        {
+          "file": "libs/ui/separator/src/lib/hlm-separator.ts",
+          "hash": "9686954093733290003"
+        },
+        {
+          "file": "libs/ui/utils/src/index.ts",
+          "hash": "1762895332825194971"
+        },
+        {
+          "file": "libs/ui/utils/src/lib/hlm.ts",
+          "hash": "17766057926556533011"
+        },
+        {
+          "file": "package-lock.json",
+          "hash": "8855515956358001039"
+        },
+        {
+          "file": "package.json",
+          "hash": "12398970907319584547"
+        },
+        {
+          "file": "public/favicon.ico",
+          "hash": "3988961587069885523"
+        },
+        {
+          "file": "src/app/app.config.ts",
+          "hash": "7897526985879639611"
+        },
+        {
+          "file": "src/app/app.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/app.html",
+          "hash": "11958735616642380711"
+        },
+        {
+          "file": "src/app/app.routes.ts",
+          "hash": "5546580453502803330"
+        },
+        {
+          "file": "src/app/app.spec.ts",
+          "hash": "2921807957588890131"
+        },
+        {
+          "file": "src/app/app.ts",
+          "hash": "9002789831133950737"
+        },
+        {
+          "file": "src/app/features/dashboard/components/grafico-gastos-categoria/grafico-gastos-categoria.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/dashboard/components/grafico-gastos-categoria/grafico-gastos-categoria.html",
+          "hash": "6463948521972351175"
+        },
+        {
+          "file": "src/app/features/dashboard/components/grafico-gastos-categoria/grafico-gastos-categoria.spec.ts",
+          "hash": "16489254787004187912"
+        },
+        {
+          "file": "src/app/features/dashboard/components/grafico-gastos-categoria/grafico-gastos-categoria.ts",
+          "hash": "9464219950712571152"
+        },
+        {
+          "file": "src/app/features/dashboard/components/grafico-tendencia-financiera/grafico-tendencia-financiera.css",
+          "hash": "15968127021077414493"
+        },
+        {
+          "file": "src/app/features/dashboard/components/grafico-tendencia-financiera/grafico-tendencia-financiera.html",
+          "hash": "6747530322555098314"
+        },
+        {
+          "file": "src/app/features/dashboard/components/grafico-tendencia-financiera/grafico-tendencia-financiera.spec.ts",
+          "hash": "9900712952325001037"
+        },
+        {
+          "file": "src/app/features/dashboard/components/grafico-tendencia-financiera/grafico-tendencia-financiera.ts",
+          "hash": "8454821872379590759"
+        },
+        {
+          "file": "src/app/features/dashboard/components/metas-ahorro/metas-ahorro.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/dashboard/components/metas-ahorro/metas-ahorro.html",
+          "hash": "2309695962407247336"
+        },
+        {
+          "file": "src/app/features/dashboard/components/metas-ahorro/metas-ahorro.spec.ts",
+          "hash": "272410583091912695"
+        },
+        {
+          "file": "src/app/features/dashboard/components/metas-ahorro/metas-ahorro.ts",
+          "hash": "5468482927411547070"
+        },
+        {
+          "file": "src/app/features/dashboard/components/presupuesto-categoria/presupuesto-categoria.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/dashboard/components/presupuesto-categoria/presupuesto-categoria.html",
+          "hash": "15382445731061955123"
+        },
+        {
+          "file": "src/app/features/dashboard/components/presupuesto-categoria/presupuesto-categoria.spec.ts",
+          "hash": "4918600719814737692"
+        },
+        {
+          "file": "src/app/features/dashboard/components/presupuesto-categoria/presupuesto-categoria.ts",
+          "hash": "4035971606608056425"
+        },
+        {
+          "file": "src/app/features/dashboard/components/transacciones-recientes/transacciones-recientes.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/dashboard/components/transacciones-recientes/transacciones-recientes.html",
+          "hash": "1310241014515177551"
+        },
+        {
+          "file": "src/app/features/dashboard/components/transacciones-recientes/transacciones-recientes.spec.ts",
+          "hash": "2205666725084332663"
+        },
+        {
+          "file": "src/app/features/dashboard/components/transacciones-recientes/transacciones-recientes.ts",
+          "hash": "6671545534929136120"
+        },
+        {
+          "file": "src/app/features/dashboard/pages/dashboard-page/dashboard-page.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/dashboard/pages/dashboard-page/dashboard-page.html",
+          "hash": "5761012973403881133"
+        },
+        {
+          "file": "src/app/features/dashboard/pages/dashboard-page/dashboard-page.spec.ts",
+          "hash": "14348297821343523396"
+        },
+        {
+          "file": "src/app/features/dashboard/pages/dashboard-page/dashboard-page.ts",
+          "hash": "2933433722132260898"
+        },
+        {
+          "file": "src/app/features/finanzas/pages/finanzas-page/finanzas-page.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/finanzas/pages/finanzas-page/finanzas-page.html",
+          "hash": "6373215254260147051"
+        },
+        {
+          "file": "src/app/features/finanzas/pages/finanzas-page/finanzas-page.spec.ts",
+          "hash": "14810866928089253495"
+        },
+        {
+          "file": "src/app/features/finanzas/pages/finanzas-page/finanzas-page.ts",
+          "hash": "7085887861137258975"
+        },
+        {
+          "file": "src/app/features/gastos/pages/gastos-page/gastos-page.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/gastos/pages/gastos-page/gastos-page.html",
+          "hash": "8766538024691053094"
+        },
+        {
+          "file": "src/app/features/gastos/pages/gastos-page/gastos-page.spec.ts",
+          "hash": "13846065347646066139"
+        },
+        {
+          "file": "src/app/features/gastos/pages/gastos-page/gastos-page.ts",
+          "hash": "4524359754735815221"
+        },
+        {
+          "file": "src/app/features/ingresos/components/grafico-ingresos/grafico-ingresos.css",
+          "hash": "2562060392925094013"
+        },
+        {
+          "file": "src/app/features/ingresos/components/grafico-ingresos/grafico-ingresos.html",
+          "hash": "8089723219474343436"
+        },
+        {
+          "file": "src/app/features/ingresos/components/grafico-ingresos/grafico-ingresos.spec.ts",
+          "hash": "2027751935893292846"
+        },
+        {
+          "file": "src/app/features/ingresos/components/grafico-ingresos/grafico-ingresos.ts",
+          "hash": "4243379935506597061"
+        },
+        {
+          "file": "src/app/features/ingresos/pages/ingresos-page/ingresos-page.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/ingresos/pages/ingresos-page/ingresos-page.html",
+          "hash": "11698108109491828370"
+        },
+        {
+          "file": "src/app/features/ingresos/pages/ingresos-page/ingresos-page.spec.ts",
+          "hash": "16330289136161892437"
+        },
+        {
+          "file": "src/app/features/ingresos/pages/ingresos-page/ingresos-page.ts",
+          "hash": "7937857884802187355"
+        },
+        {
+          "file": "src/app/features/reportes/pages/reportes-page/reportes-page.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/features/reportes/pages/reportes-page/reportes-page.html",
+          "hash": "17174093824576093168"
+        },
+        {
+          "file": "src/app/features/reportes/pages/reportes-page/reportes-page.spec.ts",
+          "hash": "13710938079258719012"
+        },
+        {
+          "file": "src/app/features/reportes/pages/reportes-page/reportes-page.ts",
+          "hash": "11950243320938534153"
+        },
+        {
+          "file": "src/app/layout/main-layout/header/header.css",
+          "hash": "12196918524069432181"
+        },
+        {
+          "file": "src/app/layout/main-layout/header/header.html",
+          "hash": "12494801368360613555"
+        },
+        {
+          "file": "src/app/layout/main-layout/header/header.spec.ts",
+          "hash": "12010466571339388315"
+        },
+        {
+          "file": "src/app/layout/main-layout/header/header.ts",
+          "hash": "13666904562562096906"
+        },
+        {
+          "file": "src/app/layout/main-layout/main-layout.css",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "src/app/layout/main-layout/main-layout.html",
+          "hash": "9000131352804386614"
+        },
+        {
+          "file": "src/app/layout/main-layout/main-layout.spec.ts",
+          "hash": "11746784914573897147"
+        },
+        {
+          "file": "src/app/layout/main-layout/main-layout.ts",
+          "hash": "9953622934604655390"
+        },
+        {
+          "file": "src/app/layout/main-layout/sidebar/sidebar.css",
+          "hash": "13831757990539859725"
+        },
+        {
+          "file": "src/app/layout/main-layout/sidebar/sidebar.html",
+          "hash": "13440938786113431713"
+        },
+        {
+          "file": "src/app/layout/main-layout/sidebar/sidebar.spec.ts",
+          "hash": "12457395844650051426"
+        },
+        {
+          "file": "src/app/layout/main-layout/sidebar/sidebar.ts",
+          "hash": "14616790133461723275"
+        },
+        {
+          "file": "src/app/shared/components/card-metrica/card-metrica.css",
+          "hash": "5778436515960646597"
+        },
+        {
+          "file": "src/app/shared/components/card-metrica/card-metrica.html",
+          "hash": "1729479978316194232"
+        },
+        {
+          "file": "src/app/shared/components/card-metrica/card-metrica.spec.ts",
+          "hash": "9880780018248071504"
+        },
+        {
+          "file": "src/app/shared/components/card-metrica/card-metrica.ts",
+          "hash": "17004032485993609947"
+        },
+        {
+          "file": "src/index.html",
+          "hash": "6425111055640750295"
+        },
+        {
+          "file": "src/main.ts",
+          "hash": "10405740721546735325"
+        },
+        {
+          "file": "src/styles.css",
+          "hash": "3938084345287592348"
+        },
+        {
+          "file": "tailwind.config.js",
+          "hash": "17199152389700767128"
+        },
+        {
+          "file": "tsconfig.app.json",
+          "hash": "8330696609372578839"
+        },
+        {
+          "file": "tsconfig.json",
+          "hash": "2673194020355956206"
+        },
+        {
+          "file": "tsconfig.spec.json",
+          "hash": "2097804975488757927"
+        }
+      ]
+    },
+    "nonProjectFiles": []
+  },
+  "externalNodesHash": "7625079523100744738"
+}
