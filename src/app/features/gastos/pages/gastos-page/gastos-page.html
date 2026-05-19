@@ -1,1 +1,266 @@
-<p>gastos-page works!</p>
+<div class="space-y-6">
+
+  <!-- Cards métricas -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <app-card-metrica
+      titulo="Total gastos"
+      [monto]="'S/ ' + totalGastos.toLocaleString('es-PE')"
+      descripcion="Este mes"
+      porcentaje="3.2%"
+      color="red"
+      [icono]="trendingDownIcon"
+    />
+    <app-card-metrica
+      titulo="Transacciones"
+      [monto]="totalTransacciones.toString()"
+      descripcion="Gastos registrados"
+      porcentaje="5.1%"
+      color="blue"
+      [icono]="hashIcon"
+    />
+    <app-card-metrica
+      titulo="Promedio por gasto"
+      [monto]="'S/ ' + promedioPorGasto.toLocaleString('es-PE')"
+      descripcion="Este mes"
+      porcentaje="2.3%"
+      color="amber"
+      [icono]="barChartIcon"
+    />
+  </div>
+
+  <!-- Tabla con paginación -->
+  <div class="bg-white border border-gray-100 rounded-2xl p-6">
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <h2 class="text-base font-semibold text-gray-800">Mis gastos</h2>
+        <p class="text-xs text-gray-400 mt-0.5">Historial de gastos registrados</p>
+      </div>
+      <div class="flex items-center gap-3">
+
+        <!-- Dropdown filtro -->
+        <div class="relative">
+          <button
+            type="button"
+            class="text-sm border border-gray-200 rounded-xl px-4 py-2.5 bg-white text-gray-600 flex items-center gap-3 hover:border-emerald-400 transition-all"
+            (click)="dropdownFiltroAbierto = !dropdownFiltroAbierto">
+            <span>{{ labelFiltroActivo }}</span>
+            <span class="text-gray-400 text-xs">▾</span>
+          </button>
+          @if (dropdownFiltroAbierto) {
+            <div class="absolute right-0 z-10 w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
+              <button
+                type="button"
+                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                [class.text-emerald-600]="categoriaFiltro === 'todas'"
+                [class.font-medium]="categoriaFiltro === 'todas'"
+                [class.text-gray-700]="categoriaFiltro !== 'todas'"
+                (click)="seleccionarFiltro('todas')">
+                Todas las categorías
+                @if (categoriaFiltro === 'todas') {
+                  <span class="text-emerald-500 text-xs">✓</span>
+                }
+              </button>
+              @for (cat of categorias; track cat) {
+                <button
+                  type="button"
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                  [class.text-emerald-600]="cat === categoriaFiltro"
+                  [class.font-medium]="cat === categoriaFiltro"
+                  [class.text-gray-700]="cat !== categoriaFiltro"
+                  (click)="seleccionarFiltro(cat)">
+                  {{ cat }}
+                  @if (cat === categoriaFiltro) {
+                    <span class="text-emerald-500 text-xs">✓</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <button
+          class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+          (click)="abrirModal()">
+          + Agregar
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-gray-100 text-left">
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Concepto</th>
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categoría</th>
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Fecha</th>
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (gasto of gastosPaginados; track gasto.concepto) {
+            <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+              <td class="py-3.5 text-sm font-medium text-gray-800">{{ gasto.concepto }}</td>
+              <td class="py-3.5">
+                <span [class]="'text-xs font-medium border px-3 py-1 rounded-full ' + getColorCategoria(gasto.categoria)">
+                  {{ gasto.categoria }}
+                </span>
+              </td>
+              <td class="py-3.5 text-sm text-gray-500">{{ gasto.fecha }}</td>
+              <td class="py-3.5 text-sm font-bold text-red-500 text-right">
+                -S/ {{ gasto.monto.toLocaleString('es-PE') }}
+              </td>
+            </tr>
+          }
+          @for (vacia of filasVacias; track vacia) {
+            <tr class="border-b border-gray-50">
+              <td class="py-3.5">&nbsp;</td>
+              <td class="py-3.5"></td>
+              <td class="py-3.5"></td>
+              <td class="py-3.5"></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-50">
+      <p class="text-xs text-gray-400">
+        Mostrando {{ (paginaActual - 1) * registrosPorPagina + 1 }}–{{ registrosMostrados }} de {{ gastosFiltrados.length }} registros
+      </p>
+      <div class="flex items-center gap-1">
+        <button
+          class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
+          [disabled]="paginaActual === 1"
+          (click)="cambiarPagina(paginaActual - 1)">
+          ‹
+        </button>
+        @for (pagina of paginas; track pagina) {
+          <button
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
+            [class.bg-emerald-500]="pagina === paginaActual"
+            [class.text-white]="pagina === paginaActual"
+            [class.text-gray-500]="pagina !== paginaActual"
+            (click)="cambiarPagina(pagina)">
+            {{ pagina }}
+          </button>
+        }
+        <button
+          class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
+          [disabled]="paginaActual === totalPaginas"
+          (click)="cambiarPagina(paginaActual + 1)">
+          ›
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Gráfico -->
+  <div class="mt-2">
+    <app-grafico-gastos />
+  </div>
+
+</div>
+
+<!-- Modal -->
+@if (modalAbierto) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" (click)="cerrarModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <div>
+          <h3 class="text-base font-bold text-gray-900">Nuevo gasto</h3>
+          <p class="text-xs text-gray-400 mt-0.5">Completa los campos para registrar</p>
+        </div>
+        <button
+          class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+          (click)="cerrarModal()">
+          ✕
+        </button>
+      </div>
+
+      <div class="px-6 py-5 space-y-4">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Concepto</label>
+          <input
+            type="text"
+            placeholder="Ej: Supermercado"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
+            [(ngModel)]="nuevoConcepto">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Monto</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">S/</span>
+            <input
+              type="number"
+              placeholder="0.00"
+              class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
+              [(ngModel)]="nuevoMonto">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Categoría</label>
+          <div class="relative">
+            <button
+              type="button"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-left flex items-center justify-between hover:border-emerald-400 transition-all"
+              (click)="dropdownModalAbierto = !dropdownModalAbierto">
+              <span [class.text-gray-400]="!nuevaCategoria" [class.text-gray-700]="!!nuevaCategoria">
+                {{ nuevaCategoria || 'Seleccionar categoría' }}
+              </span>
+              <span class="text-gray-400 text-xs">▾</span>
+            </button>
+            @if (dropdownModalAbierto) {
+              <div class="absolute z-10 w-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
+                @for (cat of categorias; track cat) {
+                  <button
+                    type="button"
+                    class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                    [class.text-emerald-600]="cat === nuevaCategoria"
+                    [class.font-medium]="cat === nuevaCategoria"
+                    [class.text-gray-700]="cat !== nuevaCategoria"
+                    (click)="seleccionarCategoria(cat)">
+                    {{ cat }}
+                    @if (cat === nuevaCategoria) {
+                      <span class="text-emerald-500 text-xs">✓</span>
+                    }
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Fecha</label>
+          <input
+            type="date"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all text-gray-600"
+            [(ngModel)]="nuevaFecha">
+        </div>
+
+      </div>
+
+      <div class="px-6 pb-6 flex gap-3">
+        <button
+          class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
+          (click)="cerrarModal()">
+          Cancelar
+        </button>
+        <button
+          class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
+          (click)="cerrarModal()">
+          Guardar gasto
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
