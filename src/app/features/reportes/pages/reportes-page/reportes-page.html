@@ -1,1 +1,44 @@
-<p>reportes-page works!</p>
+<div class="space-y-6">
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+    <!-- Ingresos -->
+    <app-card-reporte
+      titulo="Reporte de Ingresos"
+      descripcion="Análisis detallado de todas tus fuentes de ingreso con tendencias y proyecciones."
+      color="emerald"
+      [icono]="TrendingUp"
+    />
+
+    <!-- Gastos -->
+    <app-card-reporte
+      titulo="Reporte de Gastos"
+      descripcion="Desglose completo por categoría con identificadores de patrones de gasto."
+      color="red"
+      [icono]="TrendingDown"
+    />
+
+    <!-- Ahorro -->
+    <app-card-reporte
+      titulo="Reporte de Ahorro"
+      descripcion="Evolución de tu ahorro mensual y proyecciones hacia tus metas financieras."
+      color="amber"
+      [icono]="PiggyBank"
+    />
+
+    <!-- Anual -->
+    <app-card-reporte
+      titulo="Reporte Anual"
+      descripcion="Resumen completo del año con comparativas interanuales y conclusiones clave."
+      color="blue"
+      [icono]="Calendar"
+    />
+
+  </div>
+
+  <!-- Gráfico resumen anual -->
+  <div class="mt-4">
+    <app-grafico-resumen-anual />
+  </div>
+
+</div>
