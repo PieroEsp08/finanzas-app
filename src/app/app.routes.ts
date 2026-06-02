@@ -16,41 +16,50 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import(
-            './features/dashboard/pages/dashboard-page/dashboard-page'
-          ).then((m) => m.DashboardPage),
+          import('./features/dashboard/pages/dashboard-page/dashboard-page')
+          .then((m) => m.DashboardPage),
       },
 
       {
         path: 'finanzas',
         loadComponent: () =>
-          import(
-            './features/finanzas/pages/finanzas-page/finanzas-page'
-          ).then((m) => m.FinanzasPage),
+          import('./features/finanzas/pages/finanzas-page/finanzas-page')
+          .then((m) => m.FinanzasPage),
       },
 
       {
         path: 'ingresos',
         loadComponent: () =>
-          import(
-            './features/ingresos/pages/ingresos-page/ingresos-page'
-          ).then((m) => m.IngresosPage),
+          import('./features/ingresos/pages/ingresos-page/ingresos-page')
+          .then((m) => m.IngresosPage),
       },
 
       {
         path: 'gastos',
         loadComponent: () =>
-          import(
-            './features/gastos/pages/gastos-page/gastos-page'
-          ).then((m) => m.GastosPage),
+          import('./features/gastos/pages/gastos-page/gastos-page')
+          .then((m) => m.GastosPage),
+      },
+
+      {
+        path: 'metas',
+        loadComponent: () =>
+          import('./features/metas/pages/metas-page/metas-page')
+          .then((m) => m.MetasPage),
+      },
+
+      {
+        path: 'presupuesto',
+        loadComponent: () =>
+          import('./features/presupuesto/pages/presupuesto-page/presupuesto-page')
+          .then((m) => m.PresupuestoPage),
       },
 
       {
         path: 'reportes',
         loadComponent: () =>
-          import(
-            './features/reportes/pages/reportes-page/reportes-page'
-          ).then((m) => m.ReportesPage),
+          import('./features/reportes/pages/reportes-page/reportes-page')
+          .then((m) => m.ReportesPage),
       },
     ],
   },

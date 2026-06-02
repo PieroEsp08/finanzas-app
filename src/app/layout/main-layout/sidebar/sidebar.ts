@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, LayoutDashboard, Wallet, TrendingUp, TrendingDown, PieChart, LogOut, Leaf, Settings, HelpCircle } from 'lucide-angular';
+import { LucideAngularModule, LayoutDashboard, Wallet, TrendingUp, TrendingDown, PieChart, LogOut, Leaf, Settings, HelpCircle, Target, PiggyBank } from 'lucide-angular';
 
 
 @Component({
@@ -21,6 +21,8 @@ export class Sidebar {
     logo: Leaf,
     settings: Settings,
     help: HelpCircle,
+    metas: Target,
+    presupuesto: PiggyBank,
   };
 
 }

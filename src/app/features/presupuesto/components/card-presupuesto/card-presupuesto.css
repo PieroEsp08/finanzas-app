@@ -1,0 +1,15 @@
+.piggy-fill {
+  animation: fillUp 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fillUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0%); }
+}
+
+.piggy-container {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+}
