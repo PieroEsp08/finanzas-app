@@ -1,0 +1,46 @@
+<div class="group relative bg-white border border-gray-100 rounded-2xl h-32 flex items-center justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-300">
+
+  <div class="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl" [style.background]="cat.color"></div>
+
+  <div class="pl-6 pr-4 py-4 flex flex-col justify-between h-full min-w-0 z-10">
+    <div class="min-w-0">
+      <h4 class="text-sm font-bold truncate tracking-tight mb-0.5" [style.color]="cat.color">
+        {{ cat.nombre }}
+      </h4>
+      <p class="text-[10px] font-medium text-gray-400 font-mono tracking-wider uppercase">
+        {{ cat.color }}
+      </p>
+    </div>
+    <div>
+      <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 bg-gray-50/50 border border-gray-100 px-2.5 py-0.5 rounded-full">
+        <span class="w-1.5 h-1.5 rounded-full" [style.background]="cat.color"></span>
+        {{ cat.transacciones }} transacciones
+      </span>
+    </div>
+  </div>
+
+  <div class="relative w-28 h-full shrink-0 overflow-hidden flex items-center justify-end pr-4">
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-24 h-48 rounded-l-full opacity-90 transition-transform group-hover:scale-105 duration-300 origin-right"
+         [style.background]="cat.color">
+    </div>
+    <div class="relative z-10 w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-xl transition-transform group-hover:scale-110 duration-300">
+      {{ cat.emoji }}
+    </div>
+  </div>
+
+  <div class="absolute top-3 right-32 flex items-center gap-1 z-30">
+    <button
+      class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-300 hover:text-gray-500 transition-colors"
+      (click)="editar.emit(cat.id); $event.stopPropagation()"
+      title="Editar">
+      <lucide-icon [img]="icons.edit" class="w-4 h-4" color="currentColor"></lucide-icon>
+    </button>
+    <button
+      class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors"
+      (click)="eliminar.emit(cat.id); $event.stopPropagation()"
+      title="Eliminar">
+      <lucide-icon [img]="icons.trash" class="w-4 h-4" color="currentColor"></lucide-icon>
+    </button>
+  </div>
+
+</div>

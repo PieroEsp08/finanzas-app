@@ -61,6 +61,18 @@ export const routes: Routes = [
           import('./features/reportes/pages/reportes-page/reportes-page')
           .then((m) => m.ReportesPage),
       },
+      {
+        path: 'configuracion',
+        loadComponent: () =>
+          import('./features/configuracion/pages/configuracion-page/configuracion-page')
+          .then((m) => m.ConfiguracionPage),
+      },
+      {
+        path: 'ayuda',
+        loadComponent: () =>
+          import('./features/ayuda/pages/ayuda-page/ayuda-page')
+          .then((m) => m.AyudaPage),
+      },
     ],
   },
 ];

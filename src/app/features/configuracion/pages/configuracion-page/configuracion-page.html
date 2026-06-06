@@ -1,0 +1,45 @@
+<div class="space-y-6">
+
+  <!-- Tabs -->
+  <div class="flex items-center gap-2 overflow-x-auto pb-1">
+    @for (tab of tabs; track tab.valor) {
+      <button
+        type="button"
+        class="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap"
+        [class.bg-emerald-500]="tabActivo === tab.valor"
+        [class.text-white]="tabActivo === tab.valor"
+        [class.shadow-sm]="tabActivo === tab.valor"
+        [class.shadow-emerald-500/20]="tabActivo === tab.valor"
+        [class.text-gray-500]="tabActivo !== tab.valor"
+        [class.hover:text-gray-700]="tabActivo !== tab.valor"
+        (click)="setTab(tab.valor)">
+
+        <lucide-icon
+          [img]="tab.icono"
+          class="w-4 h-4"
+          color="currentColor">
+        </lucide-icon>
+
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Contenido -->
+
+  <div class="mt-8">
+
+    @if (tabActivo === 'cuenta') {
+        <app-cuenta-tab />
+    }
+
+    @if (tabActivo === 'general') {
+        <app-general-tab />
+    }
+
+    @if (tabActivo === 'categorias') {
+        <app-categorias-tab />
+    }
+  </div>
+
+</div>

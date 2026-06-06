@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding: 0.75rem 1rem;
+
+  border-radius: 0.75rem;
+
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  color: #6b7280;
+
+  transition: all 0.2s ease;
+
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.tab-active {
+  background: #10b981;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.tab-active:hover {
+  background: #10b981;
+  color: white;
+}
