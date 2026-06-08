@@ -1,0 +1,360 @@
+<div class="flex min-h-screen">
+
+  <!-- ===== LADO IZQUIERDO: BRANDING ===== -->
+  <div class="hidden lg:flex flex-1 flex-col items-center justify-center px-12 py-16 relative overflow-hidden"
+    style="background: linear-gradient(160deg, #0f172a, #1e293b)">
+
+    <!-- Decoración de fondo -->
+    <div class="absolute inset-0" style="background: radial-gradient(circle at 30% 40%, rgba(16,185,129,.15) 0%, transparent 60%)"></div>
+    <div class="absolute -top-12 -right-12 w-72 h-72 rounded-full" style="border: 3px solid rgba(16,185,129,.08)"></div>
+    <div class="absolute -bottom-20 -left-20 w-96 h-96 rounded-full" style="border: 3px solid rgba(16,185,129,.05)"></div>
+
+    <div class="relative z-10 text-center max-w-sm w-full">
+
+      <!-- Logo -->
+      <div class="inline-flex items-center justify-center rounded-2xl mb-7"
+        style="width:72px;height:72px;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 12px 32px rgba(16,185,129,.3)">
+        <lucide-icon [img]="icons.logo" class="w-8 h-8" color="white"></lucide-icon>
+      </div>
+
+      <h2 class="text-4xl font-extrabold text-white tracking-tight mb-3">
+        Finanzas<span style="color:#34d399">App</span>
+      </h2>
+      <p class="text-base mb-10" style="color:rgba(255,255,255,.45);line-height:1.7">
+        Controla tus gastos, ahorra con metas claras y toma mejores decisiones financieras.
+      </p>
+
+      <!-- Features -->
+      <div class="flex flex-col gap-4 text-left">
+
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(16,185,129,.12)">
+            <lucide-icon [img]="icons.chart" class="w-4 h-4" style="color:#10b981" color="#10b981"></lucide-icon>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-white">Reportes visuales</p>
+            <p class="text-xs" style="color:rgba(255,255,255,.35)">Gráficos claros de tus finanzas</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(59,130,246,.12)">
+            <lucide-icon [img]="icons.target" class="w-4 h-4" color="#3b82f6"></lucide-icon>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-white">Metas de ahorro</p>
+            <p class="text-xs" style="color:rgba(255,255,255,.35)">Objetivos con seguimiento real</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background:rgba(139,92,246,.12)">
+            <lucide-icon [img]="icons.shield" class="w-4 h-4" color="#8b5cf6"></lucide-icon>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-white">Seguridad total</p>
+            <p class="text-xs" style="color:rgba(255,255,255,.35)">Tus datos están completamente protegidos</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LADO DERECHO: FORMULARIO ===== -->
+  <div class="flex flex-1 items-center justify-center px-6 py-12 bg-white">
+    <div class="w-full max-w-sm">
+
+      <!-- Logo mobile -->
+      <div class="flex lg:hidden items-center gap-2.5 mb-8">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center"
+          style="background:linear-gradient(135deg,#10b981,#059669)">
+          <lucide-icon [img]="icons.logo" class="w-4 h-4" color="white"></lucide-icon>
+        </div>
+        <span class="text-lg font-extrabold">Finanzas<span class="text-emerald-500">App</span></span>
+      </div>
+
+      <!-- Cabecera -->
+      <div class="mb-7">
+        <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+          {{ modo === 'login' ? 'Bienvenido' : 'Crea tu cuenta' }}
+        </h2>
+        <p class="text-sm text-gray-400 mt-1">
+          {{ modo === 'login' ? 'Ingresa tus credenciales para continuar' : 'Empieza a controlar tus finanzas hoy' }}
+        </p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex bg-gray-100 rounded-xl p-1 mb-6">
+        <button type="button"
+          class="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
+          [class.bg-emerald-500]="modo === 'login'"
+          [class.text-white]="modo === 'login'"
+          [class.shadow-sm]="modo === 'login'"
+          [class.text-gray-500]="modo !== 'login'"
+          (click)="setModo('login')">
+          Iniciar sesión
+        </button>
+        <button type="button"
+          class="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
+          [class.bg-emerald-500]="modo === 'registro'"
+          [class.text-white]="modo === 'registro'"
+          [class.shadow-sm]="modo === 'registro'"
+          [class.text-gray-500]="modo !== 'registro'"
+          (click)="setModo('registro')">
+          Crear cuenta
+        </button>
+      </div>
+
+      <!-- ===== FORMULARIO LOGIN ===== -->
+      @if (modo === 'login') {
+        <div class="flex flex-col gap-4">
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Correo electrónico</label>
+            <div class="relative">
+              <input
+                type="email"
+                [(ngModel)]="loginEmail"
+                placeholder="tu@correo.com"
+                class="w-full border rounded-xl px-4 py-2.5 pl-12 text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-500/10"
+                [class.border-gray-200]="!errores['email']"
+                [class.focus:border-emerald-400]="!errores['email']"
+                [class.border-red-400]="errores['email']">
+              <lucide-icon [img]="icons.mail" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
+            </div>
+            @if (errores['email']) {
+              <p class="text-xs text-red-500 mt-1 flex items-center gap-1">{{ errores['email'] }}</p>
+            }
+          </div>
+
+          <!-- Contraseña -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
+            <div class="relative">
+              <input
+                [type]="verPassword ? 'text' : 'password'"
+                [(ngModel)]="loginPassword"
+                placeholder="Ingresa tu contraseña"
+                class="w-full border rounded-xl px-4 py-2.5 pl-12 pr-11 text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-500/10"
+                [class.border-gray-200]="!errores['password']"
+                [class.focus:border-emerald-400]="!errores['password']"
+                [class.border-red-400]="errores['password']">
+              <lucide-icon [img]="icons.lock" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
+              <button type="button" (click)="verPassword = !verPassword"
+                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                <lucide-icon [img]="verPassword ? icons.eyeOff : icons.eye" class="w-4 h-4" color="currentColor"></lucide-icon>
+              </button>
+            </div>
+            @if (errores['password']) {
+              <p class="text-xs text-red-500 mt-1">{{ errores['password'] }}</p>
+            }
+          </div>
+
+          <!-- Recordarme + Olvidé -->
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 cursor-pointer" (click)="terminosAceptados = !terminosAceptados">
+              <div class="flex items-center justify-center transition-all"
+                style="width:18px;height:18px;border-radius:6px;border:1.5px solid"
+                [style.background]="terminosAceptados ? '#10b981' : '#fff'"
+                [style.border-color]="terminosAceptados ? '#10b981' : '#d1d5db'">
+                @if (terminosAceptados) {
+                  <lucide-icon [img]="icons.check" class="w-2.5 h-2.5" color="white"></lucide-icon>
+                }
+              </div>
+              <span class="text-sm text-gray-500">Recordarme</span>
+            </label>
+            <button type="button" class="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+
+          <!-- Botón -->
+          <button type="button" (click)="iniciarSesion()"
+            class="w-full py-3 rounded-xl text-white text-sm font-bold transition-all mt-1"
+            style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 16px rgba(16,185,129,.25)"
+            [disabled]="cargando">
+            @if (cargando) {
+              <span class="flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Ingresando...
+              </span>
+            } @else {
+              Iniciar sesión
+            }
+          </button>
+
+        </div>
+      }
+
+      <!-- ===== FORMULARIO REGISTRO ===== -->
+      @if (modo === 'registro') {
+        <div class="flex flex-col gap-4">
+
+          <!-- Nombre -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Nombre completo</label>
+            <div class="relative">
+              <input
+                type="text"
+                [(ngModel)]="registroNombre"
+                placeholder="Ingresa tu nombre completo"
+                class="w-full border rounded-xl px-4 py-2.5 pl-12 text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-500/10"
+                [class.border-gray-200]="!errores['nombre']"
+                [class.border-red-400]="errores['nombre']">
+              <lucide-icon [img]="icons.user" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
+            </div>
+            @if (errores['nombre']) {
+              <p class="text-xs text-red-500 mt-1">{{ errores['nombre'] }}</p>
+            }
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Correo electrónico</label>
+            <div class="relative">
+              <input
+                type="email"
+                [(ngModel)]="registroEmail"
+                placeholder="tu@correo.com"
+                class="w-full border rounded-xl px-4 py-2.5 pl-12 text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-500/10"
+                [class.border-gray-200]="!errores['email']"
+                [class.border-red-400]="errores['email']">
+              <lucide-icon [img]="icons.mail" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
+            </div>
+            @if (errores['email']) {
+              <p class="text-xs text-red-500 mt-1">{{ errores['email'] }}</p>
+            }
+          </div>
+
+          <!-- Contraseña + fortaleza -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
+            <div class="relative">
+              <input
+                [type]="verPassword ? 'text' : 'password'"
+                [(ngModel)]="registroPassword"
+                placeholder="Ingresa tu contraseña"
+                (ngModelChange)="calcularFortaleza()"
+                class="w-full border rounded-xl px-4 py-2.5 pl-12 pr-11 text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-500/10"
+                [class.border-gray-200]="!errores['password']"
+                [class.border-red-400]="errores['password']">
+              <lucide-icon [img]="icons.lock" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
+              <button type="button" (click)="verPassword = !verPassword"
+                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                <lucide-icon [img]="verPassword ? icons.eyeOff : icons.eye" class="w-4 h-4" color="currentColor"></lucide-icon>
+              </button>
+            </div>
+            @if (fortaleza > 0) {
+              <div class="mt-2">
+                <div class="h-1 rounded-full bg-gray-100 overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-300"
+                    [style.width.%]="fortaleza"
+                    [style.background]="fortalezaColor">
+                  </div>
+                </div>
+                <p class="text-xs font-semibold mt-1 text-right" [style.color]="fortalezaColor">{{ fortalezaLabel }}</p>
+              </div>
+            }
+            @if (errores['password']) {
+              <p class="text-xs text-red-500 mt-1">{{ errores['password'] }}</p>
+            }
+          </div>
+
+          <!-- Confirmar contraseña -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Confirmar contraseña</label>
+            <div class="relative">
+              <input
+                [type]="verPassword2 ? 'text' : 'password'"
+                [(ngModel)]="registroPassword2"
+                placeholder="Repite tu contraseña"
+                class="w-full border rounded-xl px-4 py-2.5 pl-12 pr-11 text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-500/10"
+                [class.border-gray-200]="!errores['password2']"
+                [class.border-red-400]="errores['password2']">
+              <lucide-icon [img]="icons.lock" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
+              <button type="button" (click)="verPassword2 = !verPassword2"
+                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                <lucide-icon [img]="verPassword2 ? icons.eyeOff : icons.eye" class="w-4 h-4" color="currentColor"></lucide-icon>
+              </button>
+            </div>
+            @if (errores['password2']) {
+              <p class="text-xs text-red-500 mt-1">{{ errores['password2'] }}</p>
+            }
+          </div>
+
+          <!-- Términos -->
+          <label class="flex items-start gap-2.5 cursor-pointer" (click)="terminosAceptados = !terminosAceptados">
+            <div class="shrink-0 flex items-center justify-center transition-all mt-0.5"
+              style="width:18px;height:18px;border-radius:6px;border:1.5px solid"
+              [style.background]="terminosAceptados ? '#10b981' : '#fff'"
+              [style.border-color]="terminosAceptados ? '#10b981' : '#d1d5db'">
+              @if (terminosAceptados) {
+                <lucide-icon [img]="icons.check" class="w-2.5 h-2.5" color="white"></lucide-icon>
+              }
+            </div>
+            <span class="text-sm text-gray-500 leading-relaxed">
+              Acepto los <a class="text-emerald-600 font-semibold hover:underline">términos de servicio</a>
+            </span>
+          </label>
+          @if (errores['terminos']) {
+            <p class="text-xs text-red-500 -mt-2">{{ errores['terminos'] }}</p>
+          }
+
+          <!-- Botón -->
+          <button type="button" (click)="crearCuenta()"
+            class="w-full py-3 rounded-xl text-white text-sm font-bold transition-all"
+            style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 16px rgba(16,185,129,.25)"
+            [disabled]="cargando">
+            @if (cargando) {
+              <span class="flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Creando cuenta...
+              </span>
+            } @else {
+              Crear mi cuenta
+            }
+          </button>
+
+        </div>
+      }
+
+      <!-- Divisor -->
+      <div class="flex items-center gap-3 my-5">
+        <div class="flex-1 h-px bg-gray-100"></div>
+        <span class="text-xs text-gray-400 font-medium">o continuar con</span>
+        <div class="flex-1 h-px bg-gray-100"></div>
+      </div>
+
+      <!-- Botones sociales -->
+      <div class="flex gap-3">
+        <button type="button" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Google
+        </button>
+        <button type="button" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+          Apple
+        </button>
+      </div>
+
+      <p class="text-center text-xs text-gray-400 mt-6">Protegido con cifrado de extremo a extremo</p>
+
+    </div>
+  </div>
+
+</div>
