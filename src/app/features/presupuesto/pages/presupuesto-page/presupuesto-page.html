@@ -1,66 +1,67 @@
 <div class="space-y-6">
 
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-
-  <!-- Izquierda: filtros + ordenar -->
-  <div class="flex items-center gap-3">
+  <!-- Header: filtros + ordenar + botón -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
     <!-- Tabs filtro -->
-    <div class="flex items-center gap-1 bg-white rounded-xl p-1 border border-gray-100 shadow-sm">
-      @for (filtro of filtros; track filtro.valor) {
+    <div class="w-full md:w-auto shrink-0">
+      <div class="flex items-center gap-1 bg-white rounded-xl p-1 border border-gray-100 shadow-sm overflow-x-auto no-scrollbar">
+        @for (filtro of filtros; track filtro.valor) {
+          <button
+            type="button"
+            class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 rounded-[10px] text-sm font-medium transition-all whitespace-nowrap"
+            [class.bg-emerald-500]="filtroActivo === filtro.valor"
+            [class.text-white]="filtroActivo === filtro.valor"
+            [class.shadow-sm]="filtroActivo === filtro.valor"
+            [class.text-gray-500]="filtroActivo !== filtro.valor"
+            (click)="seleccionarFiltro(filtro.valor)">
+            {{ filtro.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Ordenar + botón nuevo -->
+    <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+
+      <!-- Dropdown ordenar -->
+      <div class="relative flex-1 md:flex-none">
         <button
           type="button"
-          class="px-4 py-2 rounded-[10px] text-sm font-medium transition-all"
-          [class.bg-emerald-500]="filtroActivo === filtro.valor"
-          [class.text-white]="filtroActivo === filtro.valor"
-          [class.shadow-sm]="filtroActivo === filtro.valor"
-          [class.text-gray-500]="filtroActivo !== filtro.valor"
-          (click)="seleccionarFiltro(filtro.valor)">
-          {{ filtro.label }}
+          class="w-full md:w-52 text-sm border border-gray-200 rounded-xl px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-emerald-400 transition-all"
+          (click)="dropdownOrdenAbierto = !dropdownOrdenAbierto">
+          <span class="truncate pr-1">{{ labelOrdenActivo }}</span>
+          <span class="text-gray-400 text-xs shrink-0">▾</span>
         </button>
-      }
-    </div>
+        @if (dropdownOrdenAbierto) {
+          <div class="absolute right-0 z-50 w-full md:w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
+            @for (opcion of opcionesOrden; track opcion.valor) {
+              <button
+                type="button"
+                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                [class.text-emerald-600]="opcion.valor === ordenActivo"
+                [class.font-medium]="opcion.valor === ordenActivo"
+                [class.text-gray-700]="opcion.valor !== ordenActivo"
+                (click)="seleccionarOrden(opcion.valor)">
+                <span class="truncate mr-2">{{ opcion.label }}</span>
+                @if (opcion.valor === ordenActivo) {
+                  <span class="text-emerald-500 text-xs shrink-0">✓</span>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
 
-    <!-- Dropdown ordenar -->
-    <div class="relative">
       <button
         type="button"
-        class="text-sm border border-gray-200 rounded-xl px-4 py-2.5 bg-white text-gray-600 flex items-center gap-3 hover:border-emerald-400 transition-all"
-        (click)="dropdownOrdenAbierto = !dropdownOrdenAbierto">
-        <span>{{ labelOrdenActivo }}</span>
-        <span class="text-gray-400 text-xs">▾</span>
+        class="shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap"
+        (click)="abrirModal()">
+        + Nuevo presupuesto
       </button>
-      @if (dropdownOrdenAbierto) {
-        <div class="absolute left-0 z-50 w-48 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
-          @for (opcion of opcionesOrden; track opcion.valor) {
-            <button
-              type="button"
-              class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
-              [class.text-emerald-600]="opcion.valor === ordenActivo"
-              [class.font-medium]="opcion.valor === ordenActivo"
-              [class.text-gray-700]="opcion.valor !== ordenActivo"
-              (click)="seleccionarOrden(opcion.valor)">
-              {{ opcion.label }}
-              @if (opcion.valor === ordenActivo) {
-                <span class="text-emerald-500 text-xs">✓</span>
-              }
-            </button>
-          }
-        </div>
-      }
+
     </div>
-
   </div>
-
-  <!-- Derecha: botón nuevo presupuesto -->
-  <button
-    class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
-    (click)="abrirModal()">
-    + Nuevo presupuesto
-  </button>
-
-</div>
 
   <!-- Grid de cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -70,24 +71,21 @@
         (eliminar)="eliminarPresupuesto(i)"
         (editar)="editarPresupuesto(i)"/>
     } @empty {
-      <!-- Empty state -->
-      <div class="col-span-full flex flex-col items-center justify-center py-16 text-center animate-fade-in">
+      <div class="col-span-full flex flex-col items-center justify-center py-12 sm:py-16 text-center px-4">
         <span class="text-5xl mb-4">💰</span>
         <p class="text-sm font-semibold text-gray-700 mb-1">Sin presupuestos</p>
         <p class="text-xs text-gray-400 mb-6 max-w-xs leading-relaxed">
           Controla tus finanzas asignando un límite de gasto a tus categorías principales.
         </p>
-        
-        <!-- Sugerencias de categorías -->
-        <div class="flex flex-wrap justify-center gap-2 max-w-md mb-2 opacity-80 pointer-events-none">
+        <!-- Categorías sugeridas -->
+        <div class="flex flex-wrap justify-center gap-2 max-w-md opacity-80 pointer-events-none">
           @for (cat of categorias.slice(0, 5); track cat.nombre) {
-            <span 
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-full text-[10px] font-bold transition-all"
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-full text-[10px] font-bold whitespace-nowrap"
               [style.background]="cat.color + '15'"
               [style.borderColor]="cat.color + '30'"
               [style.color]="cat.color">
-              <span>{{ cat.icono }}</span>
-              <span class="uppercase tracking-wider">{{ cat.nombre }}</span>
+              {{ cat.icono }} <span class="uppercase tracking-wider">{{ cat.nombre }}</span>
             </span>
           }
           <span class="inline-flex items-center px-3 py-1.5 bg-gray-50 border border-dashed border-gray-200 rounded-full text-[10px] font-bold text-gray-400 uppercase tracking-wider">
@@ -100,24 +98,27 @@
 
 </div>
 
+<!-- Modal nuevo presupuesto -->
 @if (modalAbierto) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" (click)="cerrarModal()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden dropdown-animate">
 
-      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+      <!-- Cabecera -->
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
         <div>
           <h3 class="text-base font-bold text-gray-900">Nuevo presupuesto</h3>
           <p class="text-xs text-gray-400 mt-0.5">Define el límite de gasto por categoría</p>
         </div>
-        <button
+        <button type="button"
           class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
           (click)="cerrarModal()">
           <lucide-icon [img]="icons.close" class="w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
         </button>
       </div>
 
-      <div class="px-6 py-5 space-y-4">
+      <!-- Campos -->
+      <div class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Categoría</label>
@@ -132,20 +133,19 @@
           </select>
         </div>
 
+        <!-- Preview categoría seleccionada -->
         @if (categoriaSeleccionada) {
           <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-100"
                [style.background]="getCategoriaSeleccionada()?.color + '10'">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg"
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0"
                  [style.background]="getCategoriaSeleccionada()?.color + '20'">
               {{ getCategoriaSeleccionada()?.icono }}
             </div>
-            <div>
-              <p class="text-sm font-semibold text-gray-800">{{ categoriaSeleccionada }}</p>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-semibold text-gray-800 truncate">{{ categoriaSeleccionada }}</p>
               <p class="text-xs text-gray-400">Categoría seleccionada</p>
             </div>
-            <div class="ml-auto w-4 h-4 rounded-full"
-                 [style.background]="getCategoriaSeleccionada()?.color">
-            </div>
+            <div class="w-4 h-4 rounded-full shrink-0" [style.background]="getCategoriaSeleccionada()?.color"></div>
           </div>
         }
 
@@ -153,9 +153,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Límite de gasto</label>
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">S/</span>
-            <input
-              type="number"
-              placeholder="0.00"
+            <input type="number" placeholder="0.00"
               class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
               [(ngModel)]="nuevoLimite">
           </div>
@@ -165,9 +163,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Monto gastado</label>
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">S/</span>
-            <input
-              type="number"
-              placeholder="0.00"
+            <input type="number" placeholder="0.00"
               class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
               [(ngModel)]="nuevoGastado">
           </div>
@@ -175,17 +171,14 @@
 
       </div>
 
-      <div class="px-6 pb-6 flex gap-3">
-        <button
-          class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
-          (click)="cerrarModal()">
-          Cancelar
-        </button>
-        <button
+      <!-- Acciones -->
+      <div class="px-6 py-4 border-t border-gray-100 flex gap-3 shrink-0 bg-gray-50/50">
+        <button type="button"
+          class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors bg-white"
+          (click)="cerrarModal()">Cancelar</button>
+        <button type="button"
           class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
-          (click)="cerrarModal()">
-          Guardar presupuesto
-        </button>
+          (click)="cerrarModal()">Guardar presupuesto</button>
       </div>
 
     </div>

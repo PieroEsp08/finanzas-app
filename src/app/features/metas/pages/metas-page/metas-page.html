@@ -1,17 +1,15 @@
 <div class="space-y-6">
 
-  <!-- Header -->
-  <div class="flex items-center justify-between">
+  <!-- Header: filtros + ordenar + botón -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-    <!-- Izquierda: filtros + ordenar -->
-    <div class="flex items-center gap-3">
-
-      <!-- Tabs filtro -->
-      <div class="flex items-center gap-1 bg-white rounded-xl p-1 border border-gray-100 shadow-sm">
+    <!-- Tabs filtro -->
+    <div class="w-full md:w-auto shrink-0">
+      <div class="flex items-center gap-1 bg-white rounded-xl p-1 border border-gray-100 shadow-sm overflow-x-auto no-scrollbar">
         @for (filtro of filtros; track filtro.valor) {
           <button
             type="button"
-            class="px-4 py-2 rounded-[10px] text-sm font-medium transition-all"
+            class="flex-1 md:flex-none inline-flex items-center justify-center px-4 py-2 rounded-[10px] text-sm font-medium transition-all whitespace-nowrap"
             [class.bg-emerald-500]="filtroActivo === filtro.valor"
             [class.text-white]="filtroActivo === filtro.valor"
             [class.shadow-sm]="filtroActivo === filtro.valor"
@@ -21,18 +19,22 @@
           </button>
         }
       </div>
+    </div>
+
+    <!-- Ordenar + botón nueva meta -->
+    <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
 
       <!-- Dropdown ordenar -->
-      <div class="relative">
+      <div class="relative flex-1 md:flex-none">
         <button
           type="button"
-          class="text-sm border border-gray-200 rounded-xl px-4 py-2.5 bg-white text-gray-600 flex items-center gap-3 hover:border-emerald-400 transition-all"
+          class="w-full md:w-52 text-sm border border-gray-200 rounded-xl px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-emerald-400 transition-all"
           (click)="dropdownOrdenAbierto = !dropdownOrdenAbierto">
-          <span>{{ labelOrdenActivo }}</span>
-          <span class="text-gray-400 text-xs">▾</span>
+          <span class="truncate pr-1">{{ labelOrdenActivo }}</span>
+          <span class="text-gray-400 text-xs shrink-0">▾</span>
         </button>
         @if (dropdownOrdenAbierto) {
-          <div class="absolute left-0 z-50 w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
+          <div class="absolute right-0 z-50 w-full md:w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
             @for (opcion of opcionesOrden; track opcion.valor) {
               <button
                 type="button"
@@ -41,9 +43,9 @@
                 [class.font-medium]="opcion.valor === ordenActivo"
                 [class.text-gray-700]="opcion.valor !== ordenActivo"
                 (click)="seleccionarOrden(opcion.valor)">
-                {{ opcion.label }}
+                <span class="truncate mr-2">{{ opcion.label }}</span>
                 @if (opcion.valor === ordenActivo) {
-                  <span class="text-emerald-500 text-xs">✓</span>
+                  <span class="text-emerald-500 text-xs shrink-0">✓</span>
                 }
               </button>
             }
@@ -51,15 +53,14 @@
         }
       </div>
 
+      <button
+        type="button"
+        class="shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap"
+        (click)="abrirModal()">
+        + Nueva meta
+      </button>
+
     </div>
-
-    <!-- Derecha: botón nueva meta -->
-    <button
-      class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
-      (click)="abrirModal()">
-      + Nueva meta
-    </button>
-
   </div>
 
   <!-- Grid de cards -->
@@ -71,51 +72,40 @@
         (abonar)="abrirModalAbonar(i)"
         (editar)="abrirModalEditar(i)"/>
     } @empty {
-      <!-- Empty state -->
-      <div class="col-span-full flex flex-col items-center justify-center py-12 text-center animate-fade-in">
+      <div class="col-span-full flex flex-col items-center justify-center py-12 text-center">
         <span class="text-5xl mb-4 drop-shadow-sm">🎯</span>
         <p class="text-base font-bold text-gray-800 mb-1">No hay metas aquí</p>
 
         @if (filtroActivo === 'todas' || filtroActivo === 'activas') {
-          <p class="text-xs text-gray-500 mb-8 max-w-xs leading-relaxed">
+          <p class="text-xs text-gray-500 mb-8 max-w-xs leading-relaxed px-4">
             Comienza creando una meta propia o elige una de estas plantillas sugeridas:
           </p>
-          
+          <!-- Plantillas prediseñadas -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl px-4">
-            
             <button type="button"
               (click)="crearMetaPrediseniada('Fondo de Emergencia', 5000, '🛡️', '#3b82f6')"
-              class="border-2 border-dashed border-blue-200 hover:border-blue-500 rounded-2xl p-5 text-left bg-blue-50/20 hover:bg-white transition-all duration-300 group hover:shadow-md flex flex-col justify-between h-36">
-              <div>
-                <span class="text-2xl mb-2.5 block p-2 bg-white rounded-xl w-fit shadow-sm border border-blue-100 group-hover:scale-110 transition-transform">🛡️</span>
-                <p class="text-xs font-bold text-gray-800 group-hover:text-blue-600 transition-colors">Fondo de Reserva</p>
-                <p class="text-[10px] text-gray-400 mt-1 leading-normal">Guarda 3 meses de tus gastos básicos para emergencias.</p>
-              </div>
+              class="border-2 border-dashed border-blue-200 hover:border-blue-500 rounded-2xl p-5 text-left bg-blue-50/20 hover:bg-white transition-all group hover:shadow-md flex flex-col min-h-[144px]">
+              <span class="text-2xl mb-2.5 block p-2 bg-white rounded-xl w-fit shadow-sm border border-blue-100 group-hover:scale-110 transition-transform">🛡️</span>
+              <p class="text-xs font-bold text-gray-800 group-hover:text-blue-600 transition-colors">Fondo de Reserva</p>
+              <p class="text-[10px] text-gray-400 mt-1 leading-normal">Guarda 3 meses de tus gastos básicos para emergencias.</p>
             </button>
-
             <button type="button"
               (click)="crearMetaPrediseniada('Vacaciones', 3000, '✈️', '#10b981')"
-              class="border-2 border-dashed border-emerald-200 hover:border-emerald-500 rounded-2xl p-5 text-left bg-emerald-50/20 hover:bg-white transition-all duration-300 group hover:shadow-md flex flex-col justify-between h-36">
-              <div>
-                <span class="text-2xl mb-2.5 block p-2 bg-white rounded-xl w-fit shadow-sm border border-emerald-100 group-hover:scale-110 transition-transform">✈️</span>
-                <p class="text-xs font-bold text-gray-800 group-hover:text-emerald-600 transition-colors">Viaje Soñado</p>
-                <p class="text-[10px] text-gray-400 mt-1 leading-normal">Para tus próximas vacaciones de verano o escapada.</p>
-              </div>
+              class="border-2 border-dashed border-emerald-200 hover:border-emerald-500 rounded-2xl p-5 text-left bg-emerald-50/20 hover:bg-white transition-all group hover:shadow-md flex flex-col min-h-[144px]">
+              <span class="text-2xl mb-2.5 block p-2 bg-white rounded-xl w-fit shadow-sm border border-emerald-100 group-hover:scale-110 transition-transform">✈️</span>
+              <p class="text-xs font-bold text-gray-800 group-hover:text-emerald-600 transition-colors">Viaje Soñado</p>
+              <p class="text-[10px] text-gray-400 mt-1 leading-normal">Para tus próximas vacaciones de verano o escapada.</p>
             </button>
-
             <button type="button"
               (click)="crearMetaPrediseniada('Tecnología', 4500, '💻', '#8b5cf6')"
-              class="border-2 border-dashed border-purple-200 hover:border-purple-500 rounded-2xl p-5 text-left bg-purple-50/20 hover:bg-white transition-all duration-300 group hover:shadow-md flex flex-col justify-between h-36">
-              <div>
-                <span class="text-2xl mb-2.5 block p-2 bg-white rounded-xl w-fit shadow-sm border border-purple-100 group-hover:scale-110 transition-transform">💻</span>
-                <p class="text-xs font-bold text-gray-800 group-hover:text-purple-600 transition-colors">Laptop o Gadget</p>
-                <p class="text-[10px] text-gray-400 mt-1 leading-normal">Renueva tus herramientas de trabajo o compra ese gadget.</p>
-              </div>
+              class="border-2 border-dashed border-purple-200 hover:border-purple-500 rounded-2xl p-5 text-left bg-purple-50/20 hover:bg-white transition-all group hover:shadow-md flex flex-col min-h-[144px]">
+              <span class="text-2xl mb-2.5 block p-2 bg-white rounded-xl w-fit shadow-sm border border-purple-100 group-hover:scale-110 transition-transform">💻</span>
+              <p class="text-xs font-bold text-gray-800 group-hover:text-purple-600 transition-colors">Laptop o Gadget</p>
+              <p class="text-[10px] text-gray-400 mt-1 leading-normal">Renueva tus herramientas de trabajo o compra ese gadget.</p>
             </button>
-
           </div>
         } @else {
-          <p class="text-xs text-gray-500 max-w-xs leading-relaxed">
+          <p class="text-xs text-gray-500 max-w-xs leading-relaxed px-4">
             Aún no has completado ninguna meta. ¡Sigue ahorrando para lograrlo!
           </p>
         }
@@ -129,19 +119,17 @@
 @if (modalAbierto) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" (click)="cerrarModal()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden dropdown-animate">
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden dropdown-animate">
 
-      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
         <div>
           <h3 class="text-base font-bold text-gray-900">Nueva meta</h3>
           <p class="text-xs text-gray-400 mt-0.5">Define tu objetivo de ahorro</p>
         </div>
-        <button
-          class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
-          (click)="cerrarModal()">✕</button>
+        <button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400" (click)="cerrarModal()">✕</button>
       </div>
 
-      <div class="px-6 py-5 space-y-4">
+      <div class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Nombre</label>
@@ -178,6 +166,7 @@
           </div>
         </div>
 
+        <!-- Selector de color -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Color</label>
           <div class="flex items-center gap-2 flex-wrap">
@@ -194,6 +183,7 @@
           </div>
         </div>
 
+        <!-- Selector de ícono -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Ícono</label>
           <div class="relative">
@@ -204,7 +194,7 @@
               <span class="text-gray-400 text-xs">▾</span>
             </button>
             @if (dropdownIconoAbierto) {
-              <div class="absolute z-10 w-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg p-3 dropdown-animate">
+              <div class="absolute z-10 w-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg p-3 dropdown-animate max-h-48 overflow-y-auto">
                 <div class="grid grid-cols-5 gap-2">
                   @for (icono of iconos; track icono) {
                     <button type="button"
@@ -229,13 +219,9 @@
 
       </div>
 
-      <div class="px-6 pb-6 flex gap-3">
-        <button
-          class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
-          (click)="cerrarModal()">Cancelar</button>
-        <button
-          class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
-          (click)="cerrarModal()">Guardar meta</button>
+      <div class="px-6 py-4 border-t border-gray-100 flex gap-3 shrink-0 bg-gray-50/50">
+        <button class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors bg-white" (click)="cerrarModal()">Cancelar</button>
+        <button class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors" (click)="cerrarModal()">Guardar meta</button>
       </div>
 
     </div>
@@ -246,8 +232,8 @@
 @if (modalAbonarAbierto) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" (click)="cerrarModalAbonar()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-      
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden dropdown-animate">
+
       <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
         <div>
           <h3 class="text-base font-bold text-gray-900">Registrar ahorro</h3>
@@ -256,15 +242,13 @@
         <button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400" (click)="cerrarModalAbonar()">✕</button>
       </div>
 
-      <div class="px-6 py-5 space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5">Monto a depositar</label>
-          <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">S/</span>
-            <input type="number" placeholder="0.00"
-              class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
-              [(ngModel)]="nuevoActual">
-          </div>
+      <div class="px-6 py-5">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Monto a depositar</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">S/</span>
+          <input type="number" placeholder="0.00"
+            class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
+            [(ngModel)]="nuevoActual">
         </div>
       </div>
 
@@ -281,9 +265,9 @@
 @if (modalEditarAbierto) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" (click)="cerrarModalEditar()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden dropdown-animate">
 
-      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
         <div>
           <h3 class="text-base font-bold text-gray-900">Modificar meta</h3>
           <p class="text-xs text-gray-400 mt-0.5">Ajusta los detalles de tu objetivo</p>
@@ -291,7 +275,8 @@
         <button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400" (click)="cerrarModalEditar()">✕</button>
       </div>
 
-      <div class="px-6 py-5 space-y-4">
+      <div class="px-6 py-5 space-y-4 overflow-y-auto flex-1">
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Nombre</label>
           <input type="text" placeholder="Ej: Vacaciones"
@@ -349,10 +334,11 @@
             class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all text-gray-600"
             [(ngModel)]="nuevaFechaLimite">
         </div>
+
       </div>
 
-      <div class="px-6 pb-6 flex gap-3">
-        <button class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors" (click)="cerrarModalEditar()">Cancelar</button>
+      <div class="px-6 py-4 border-t border-gray-100 flex gap-3 shrink-0 bg-gray-50/50">
+        <button class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors bg-white" (click)="cerrarModalEditar()">Cancelar</button>
         <button class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors" (click)="cerrarModalEditar()">Guardar cambios</button>
       </div>
 

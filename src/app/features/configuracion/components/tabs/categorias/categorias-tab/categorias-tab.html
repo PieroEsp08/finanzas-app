@@ -1,25 +1,27 @@
 <div class="space-y-10">
 
-  <!-- INGRESOS -->
+  <!-- Categorías de ingresos -->
   <section class="space-y-4">
-    <div class="flex items-center justify-between border-b border-gray-100 pb-4">
-      <div>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 text-center md:text-left">
+      <div class="flex flex-col items-center md:items-start">
         <h3 class="text-base font-bold text-gray-900 tracking-tight flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/20"></span>
           Categorías de Ingresos
         </h3>
         <p class="text-xs text-gray-400 mt-0.5">Gestiona tus fuentes de dinero y entradas</p>
       </div>
-      <button
-        class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors flex items-center gap-2 active:scale-[0.98]"
-        (click)="abrirModal('ingreso')">
-        <lucide-icon [img]="icons.plus" class="w-4 h-4" color="currentColor"></lucide-icon>
-        Nuevo ingreso
-      </button>
+      <div class="flex justify-center md:justify-end">
+        <button type="button"
+          class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 active:scale-[0.98] shadow-sm shadow-emerald-500/10"
+          (click)="abrirModal('ingreso')">
+          <lucide-icon [img]="icons.plus" class="w-4 h-4 shrink-0" color="currentColor"></lucide-icon>
+          Nuevo ingreso
+        </button>
+      </div>
     </div>
 
     @if (categoriasIngreso.length === 0) {
-      <p class="text-xs text-gray-400 italic py-2 pl-1">No hay categorías de ingreso registradas.</p>
+      <p class="text-xs text-gray-400 italic py-2 pl-1 text-center md:text-left">No hay categorías de ingreso registradas.</p>
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         @for (cat of categoriasIngreso; track cat.id) {
@@ -32,26 +34,28 @@
     }
   </section>
 
-  <!-- GASTOS -->
+  <!-- Categorías de gastos -->
   <section class="space-y-4">
-    <div class="flex items-center justify-between border-b border-gray-100 pb-4">
-      <div>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 text-center md:text-left">
+      <div class="flex flex-col items-center md:items-start">
         <h3 class="text-base font-bold text-gray-900 tracking-tight flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm shadow-rose-500/20"></span>
           Categorías de Gastos
         </h3>
         <p class="text-xs text-gray-400 mt-0.5">Gestiona tus pagos, salidas y consumos periódicos</p>
       </div>
-      <button
-        class="bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors flex items-center gap-2 active:scale-[0.98]"
-        (click)="abrirModal('gasto')">
-        <lucide-icon [img]="icons.plus" class="w-4 h-4" color="currentColor"></lucide-icon>
-        Nuevo gasto
-      </button>
+      <div class="flex justify-center md:justify-end">
+        <button type="button"
+          class="bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 active:scale-[0.98] shadow-sm shadow-rose-500/10"
+          (click)="abrirModal('gasto')">
+          <lucide-icon [img]="icons.plus" class="w-4 h-4 shrink-0" color="currentColor"></lucide-icon>
+          Nuevo gasto
+        </button>
+      </div>
     </div>
 
     @if (categoriasGasto.length === 0) {
-      <p class="text-xs text-gray-400 italic py-2 pl-1">No hay categorías de gasto registradas.</p>
+      <p class="text-xs text-gray-400 italic py-2 pl-1 text-center md:text-left">No hay categorías de gasto registradas.</p>
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         @for (cat of categoriasGasto; track cat.id) {
@@ -66,33 +70,34 @@
 
 </div>
 
-<!-- MODAL -->
+<!--  Modal: Crear / Editar Categoría -->
 @if (modalAbierto) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" (click)="cerrarModal()"></div>
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-xs" (click)="cerrarModal()"></div>
 
     <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 animate-in fade-in zoom-in-95 duration-150">
 
-      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+      <!-- Cabecera -->
+      <div class="flex items-center justify-between px-6 py-5 border-b border-b-gray-50">
         <div>
           <h3 class="text-base font-bold text-gray-900 tracking-tight">{{ titulo }}</h3>
           <p class="text-xs text-gray-400 mt-0.5">
             {{ nuevoTipo === 'ingreso' ? 'Define los detalles para registrar tu entrada de dinero' : 'Configura los campos para clasificar tus salidas y pagos' }}
           </p>
         </div>
-        <button
+        <button type="button"
           class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
           (click)="cerrarModal()">
           <lucide-icon [img]="icons.close" class="w-4 h-4" color="currentColor"></lucide-icon>
         </button>
       </div>
 
-      <div class="px-6 py-5 space-y-4 max-h-[65vh] overflow-y-auto custom-scrollbar">
+      <!-- Campos -->
+      <div class="px-6 py-5 space-y-5 max-h-[60vh] overflow-y-auto custom-scrollbar">
 
         <div class="space-y-1.5">
-          <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide ml-0.5">Nombre de categoría</label>
-          <input
-            type="text"
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide ml-0.5">Nombre de categoría</label>
+          <input type="text"
             [placeholder]="nuevoTipo === 'ingreso' ? 'Ej: Sueldo, Inversiones, Ventas...' : 'Ej: Suscripciones, Compras, Alquiler...'"
             class="w-full bg-gray-50/50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:bg-white focus:ring-4 transition-all"
             [class.focus:border-emerald-400]="nuevoTipo === 'ingreso'"
@@ -102,12 +107,12 @@
             [(ngModel)]="nuevoNombre">
         </div>
 
+        <!-- Selector de color -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide ml-0.5">Color identificador</label>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide ml-0.5">Color identificador</label>
           <div class="flex items-center gap-2.5 flex-wrap p-1">
             @for (color of colores; track color) {
-              <button
-                type="button"
+              <button type="button"
                 class="w-7 h-7 rounded-full transition-all active:scale-90 relative flex items-center justify-center"
                 [style.background]="color"
                 (click)="nuevoColor = color">
@@ -119,12 +124,12 @@
           </div>
         </div>
 
+        <!-- Selector de emoji -->
         <div class="space-y-1.5">
-          <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide ml-0.5">Ícono descriptivo</label>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide ml-0.5">Ícono descriptivo</label>
           <div class="grid grid-cols-7 gap-1.5 p-2.5 bg-gray-50/40 border border-gray-100 rounded-xl max-h-36 overflow-y-auto custom-scrollbar">
             @for (emoji of emojis; track emoji) {
-              <button
-                type="button"
+              <button type="button"
                 class="w-9 h-9 rounded-lg flex items-center justify-center text-lg transition-all hover:bg-white hover:shadow-sm active:scale-95"
                 [class.bg-white]="nuevoEmoji === emoji"
                 [class.shadow-sm]="nuevoEmoji === emoji"
@@ -140,13 +145,14 @@
 
       </div>
 
+      <!-- Acciones -->
       <div class="px-6 pb-6 pt-2 flex gap-3">
-        <button
+        <button type="button"
           class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
           (click)="cerrarModal()">
           Cancelar
         </button>
-        <button
+        <button type="button"
           class="flex-1 disabled:opacity-40 text-white text-sm font-semibold py-2.5 rounded-xl transition-all shadow-md"
           [class.bg-emerald-500]="nuevoTipo === 'ingreso'"
           [class.hover:bg-emerald-600]="nuevoTipo === 'ingreso'"

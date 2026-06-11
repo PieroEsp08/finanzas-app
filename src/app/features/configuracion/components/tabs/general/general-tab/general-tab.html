@@ -1,11 +1,11 @@
 <div class="mt-2 space-y-6">
 
-  <!-- SECCIÓN: PREFERENCIAS -->
-  <div class="bg-white border border-gray-100 rounded-2xl p-8 relative">
+  <!-- Preferencias -->
+  <div class="bg-white border border-gray-100 rounded-2xl p-5 sm:p-8">
     <h3 class="text-base font-bold text-gray-900 mb-6">Preferencias</h3>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-      
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
+
       <!-- Dropdown: Moneda -->
       <div class="relative">
         <label class="block text-sm font-medium text-gray-700 mb-1.5">Moneda principal</label>
@@ -15,9 +15,8 @@
           <span class="text-gray-800 font-medium">{{ labelMoneda }}</span>
           <lucide-icon [img]="icons.chevron" class="w-4 h-4 text-gray-400 transition-transform" [class.rotate-180]="dropdowns['moneda']"></lucide-icon>
         </button>
-
         @if (dropdowns['moneda']) {
-          <div class="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl py-1.5 overflow-hidden">
+          <div class="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl py-1.5 overflow-hidden dropdown-animate">
             @for (opt of opcionesMoneda; track opt.id) {
               <button (click)="seleccionar('moneda', opt.id)" type="button"
                 class="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
@@ -39,9 +38,8 @@
           <span class="text-gray-800 font-medium">{{ labelIdioma }}</span>
           <lucide-icon [img]="icons.chevron" class="w-4 h-4 text-gray-400 transition-transform" [class.rotate-180]="dropdowns['idioma']"></lucide-icon>
         </button>
-
         @if (dropdowns['idioma']) {
-          <div class="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl py-1.5">
+          <div class="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl py-1.5 overflow-hidden dropdown-animate">
             @for (opt of opcionesIdioma; track opt.id) {
               <button (click)="seleccionar('idioma', opt.id)" type="button"
                 class="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
@@ -54,7 +52,7 @@
         }
       </div>
 
-      <!-- Dropdown: Formato Fecha -->
+      <!-- Dropdown: Formato fecha -->
       <div class="relative">
         <label class="block text-sm font-medium text-gray-700 mb-1.5">Formato de fecha</label>
         <button (click)="toggleDropdown('formatoFecha')" type="button"
@@ -63,9 +61,8 @@
           <span class="text-gray-800 font-medium">{{ labelFormato }}</span>
           <lucide-icon [img]="icons.chevron" class="w-4 h-4 text-gray-400 transition-transform" [class.rotate-180]="dropdowns['formatoFecha']"></lucide-icon>
         </button>
-
         @if (dropdowns['formatoFecha']) {
-          <div class="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl py-1.5">
+          <div class="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl py-1.5 overflow-hidden dropdown-animate">
             @for (opt of opcionesFormato; track opt.id) {
               <button (click)="seleccionar('formatoFecha', opt.id)" type="button"
                 class="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
@@ -78,7 +75,7 @@
         }
       </div>
 
-      <!-- Dropdown: Primer Día -->
+      <!-- Dropdown: Primer día -->
       <div class="relative">
         <label class="block text-sm font-medium text-gray-700 mb-1.5">Primer día de la semana</label>
         <button (click)="toggleDropdown('primerDia')" type="button"
@@ -87,9 +84,8 @@
           <span class="text-gray-800 font-medium">{{ labelDia }}</span>
           <lucide-icon [img]="icons.chevron" class="w-4 h-4 text-gray-400 transition-transform" [class.rotate-180]="dropdowns['primerDia']"></lucide-icon>
         </button>
-
         @if (dropdowns['primerDia']) {
-          <div class="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl py-1.5">
+          <div class="absolute z-50 w-full mt-1.5 bg-white border border-gray-100 rounded-xl shadow-xl py-1.5 overflow-hidden dropdown-animate">
             @for (opt of opcionesDia; track opt.id) {
               <button (click)="seleccionar('primerDia', opt.id)" type="button"
                 class="w-full flex items-center justify-between px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
@@ -103,21 +99,21 @@
       </div>
     </div>
 
-    <!-- Backdrop para cerrar al hacer clic fuera -->
+    <!-- Backdrop para cerrar dropdowns al hacer clic fuera -->
     @if (dropdowns['moneda'] || dropdowns['idioma'] || dropdowns['formatoFecha'] || dropdowns['primerDia']) {
-      <div class="fixed inset-0 z-40" (click)="cerrarTodos()"></div>
+      <div class="fixed inset-0 z-30" (click)="cerrarTodos()"></div>
     }
   </div>
 
-  <!-- SECCIÓN: NOTIFICACIONES -->
-  <div class="bg-white border border-gray-100 rounded-2xl p-8">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h3 class="text-base font-bold text-gray-900">Notificaciones</h3>
-        <p class="text-xs text-gray-400 mt-0.5">Elige qué alertas deseas recibir</p>
+  <!-- Notificaciones -->
+  <div class="bg-white border border-gray-100 rounded-2xl p-5 sm:p-8">
+    <div class="flex flex-row items-center justify-between mb-6 gap-2">
+      <div class="min-w-0">
+        <h3 class="text-base font-bold text-gray-900 truncate">Notificaciones</h3>
+        <p class="text-xs text-gray-400 mt-0.5 truncate">Elige qué alertas deseas recibir</p>
       </div>
       <button (click)="toggleTodas()" type="button"
-        class="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-3 py-1.5 rounded-lg transition-all">
+        class="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 px-3 py-1.5 rounded-lg transition-all shrink-0">
         {{ todasActivas() ? 'Desactivar todas' : 'Activar todas' }}
       </button>
     </div>
@@ -126,15 +122,16 @@
       @for (notif of notificaciones; track notif.id) {
         <div class="flex items-center justify-between p-3.5 rounded-xl hover:bg-gray-50/70 border border-transparent hover:border-gray-100 transition-all">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
               [style.background]="notif.color + '18'" [style.color]="notif.color">
               <lucide-icon [img]="notif.icono" class="w-4 h-4" color="currentColor"></lucide-icon>
             </div>
             <div class="min-w-0">
               <p class="text-sm font-semibold text-gray-800 truncate">{{ notif.label }}</p>
-              <p class="text-[11px] text-gray-400 mt-0.5 truncate">{{ notif.desc }}</p>
+              <p class="text-[11px] text-gray-400 mt-0.5 line-clamp-1 md:truncate">{{ notif.desc }}</p>
             </div>
           </div>
+          <!-- Switch activar/desactivar notificación -->
           <button (click)="toggleNotif(notif)" type="button"
             class="relative w-10 h-5 rounded-full transition-colors shrink-0 ml-4"
             [class.bg-emerald-500]="notif.activa" [class.bg-gray-300]="!notif.activa">

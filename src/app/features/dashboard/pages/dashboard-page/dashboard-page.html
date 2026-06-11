@@ -1,7 +1,7 @@
-<div class="space-y-10">
+<div class="space-y-6 lg:space-y-10">
 
   <!-- Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+  <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5">
 
     <app-card-metrica
       titulo="Balance Total"
@@ -41,8 +41,8 @@
 
   </div>
 
-  <!-- Gráfico -->
-  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+  <!-- Gráficos -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
 
     <div class="xl:col-span-2">
       <app-grafico-tendencia-financiera />
@@ -55,14 +55,14 @@
   </div>
 
   <!-- Transacciones y widgets -->
-  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
 
     <div class="xl:col-span-2">
       <app-transacciones-recientes />
     </div>
 
-    <div class="xl:col-span-1 flex flex-col gap-6">
-      <app-metas-ahorro /> 
+    <div class="xl:col-span-1 flex flex-col gap-4 lg:gap-6">
+      <app-metas-ahorro />
       <app-presupuesto-categoria />
     </div>
 

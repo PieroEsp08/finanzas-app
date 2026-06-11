@@ -22,5 +22,7 @@ export class CardMetrica {
 
   @Input() color = 'emerald';
 
+  @Input() layout: 'grid' | 'list' = 'grid';
+
 
 }

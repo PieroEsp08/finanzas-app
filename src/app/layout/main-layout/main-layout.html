@@ -1,19 +1,30 @@
-<div class="flex min-h-screen bg-[#f8faf9]">
+<div class="flex min-h-screen bg-[#f8faf9] overflow-x-hidden">
 
   <!-- Sidebar -->
-  <app-sidebar />
+  <div
+    class="fixed inset-y-0 left-0 z-50 w-[260px] transform bg-white transition-transform duration-300 ease-in-out lg:translate-x-0"
+    [class.translate-x-0]="menuAbierto"
+    [class.-translate-x-full]="!menuAbierto">
 
-  <!-- Contenido -->
-  <div class="flex flex-1 flex-col ml-[260px]">
+    <app-sidebar />
+    
+  </div>
 
-    <!-- Header -->
-    <app-header />
+  <!-- Overlay móvil -->
+  @if (menuAbierto) {
+    <div
+      class="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs lg:hidden"
+      (click)="cerrarMenu()">
+    </div>
+  }
 
-    <!-- Páginas -->
-    <main class="flex-1 p-6">
+  <!-- Contenido principal -->
+  <div class="flex flex-1 flex-col min-w-0 transition-all duration-300 lg:ml-[260px] pt-[88px]">
 
+    <app-header (clickMenu)="toggleMenu()" />
+
+    <main class="flex-1 p-4 sm:p-6">
       <router-outlet />
-
     </main>
 
   </div>

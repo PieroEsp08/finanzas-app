@@ -1,8 +1,9 @@
 <div class="space-y-6">
 
-  <!-- Cards métricas -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+  <!-- Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
     <app-card-metrica
+      layout="list"
       titulo="Total ingresos"
       [monto]="'S/ ' + totalIngresos.toLocaleString('es-PE')"
       descripcion="Este mes"
@@ -11,6 +12,7 @@
       [icono]="trendingUpIcon"
     />
     <app-card-metrica
+      layout="list"
       titulo="Transacciones"
       [monto]="totalTransacciones.toString()"
       descripcion="Ingresos registrados"
@@ -19,6 +21,7 @@
       [icono]="hashIcon"
     />
     <app-card-metrica
+      layout="list"
       titulo="Promedio por ingreso"
       [monto]="'S/ ' + promedioPorIngreso.toLocaleString('es-PE')"
       descripcion="Este mes"
@@ -28,9 +31,10 @@
     />
   </div>
 
-  <!-- Tabla con paginación -->
-  <div class="bg-white border border-gray-100 rounded-2xl p-6">
+  <!-- Tabla con filtro -->
+  <div class="bg-white border border-gray-100 rounded-2xl p-4 md:p-6">
 
+    <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
         <h2 class="text-base font-semibold text-gray-800">Mis ingresos</h2>
@@ -38,41 +42,35 @@
       </div>
       <div class="flex items-center gap-3">
 
-        <!-- Dropdown filtro -->
-        <div class="relative">
+        <!-- Dropdown categoría -->
+        <div class="relative flex-1 sm:flex-none">
           <button
             type="button"
-            class="text-sm border border-gray-200 rounded-xl px-4 py-2.5 bg-white text-gray-600 flex items-center gap-3 hover:border-emerald-400 transition-all"
+            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-emerald-400 transition-all"
             (click)="dropdownFiltroAbierto = !dropdownFiltroAbierto">
-            <span>{{ labelFiltroActivo }}</span>
-            <span class="text-gray-400 text-xs">▾</span>
+            <span class="truncate">{{ labelFiltroActivo }}</span>
+            <span class="text-gray-400 text-[10px]">▾</span>
           </button>
           @if (dropdownFiltroAbierto) {
             <div class="absolute right-0 z-10 w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
               <button
                 type="button"
-                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
                 [class.text-emerald-600]="categoriaFiltro === 'todas'"
                 [class.font-medium]="categoriaFiltro === 'todas'"
                 [class.text-gray-700]="categoriaFiltro !== 'todas'"
                 (click)="seleccionarFiltro('todas')">
                 Todas las categorías
-                @if (categoriaFiltro === 'todas') {
-                  <span class="text-emerald-500 text-xs">✓</span>
-                }
               </button>
               @for (cat of categorias; track cat) {
                 <button
                   type="button"
-                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
                   [class.text-emerald-600]="cat === categoriaFiltro"
                   [class.font-medium]="cat === categoriaFiltro"
                   [class.text-gray-700]="cat !== categoriaFiltro"
                   (click)="seleccionarFiltro(cat)">
                   {{ cat }}
-                  @if (cat === categoriaFiltro) {
-                    <span class="text-emerald-500 text-xs">✓</span>
-                  }
                 </button>
               }
             </div>
@@ -80,14 +78,15 @@
         </div>
 
         <button
-          class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+          class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl transition-colors shrink-0"
           (click)="abrirModal()">
           + Agregar
         </button>
       </div>
     </div>
 
-    <div class="overflow-x-auto">
+    <!-- Tabla (solo desktop) -->
+    <div class="hidden md:block">
       <table class="w-full">
         <thead>
           <tr class="border-b border-gray-100 text-left">
@@ -115,21 +114,48 @@
           @for (vacia of filasVacias; track vacia) {
             <tr class="border-b border-gray-50">
               <td class="py-3.5">&nbsp;</td>
-              <td class="py-3.5"></td>
-              <td class="py-3.5"></td>
-              <td class="py-3.5"></td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
           }
         </tbody>
       </table>
     </div>
 
+    <!-- Cards (solo móvil) -->
+    <div class="block md:hidden space-y-3">
+      @for (ingreso of ingresosPaginados; track ingreso.concepto) {
+        <div class="p-4 border border-gray-50 bg-gray-50/30 rounded-xl flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">{{ ingreso.concepto }}</p>
+            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+              <span [class]="'text-[10px] font-medium border px-2 py-0.5 rounded-full ' + getColorCategoria(ingreso.categoria)">
+                {{ ingreso.categoria }}
+              </span>
+              <span class="text-[11px] text-gray-400">{{ ingreso.fecha }}</span>
+            </div>
+          </div>
+          <p class="text-sm font-bold text-emerald-600 shrink-0">
+            +S/ {{ ingreso.monto.toLocaleString('es-PE') }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- Estado vacío -->
+    @if (ingresosPaginados.length === 0) {
+      <div class="py-16 text-center text-sm text-gray-400">
+        No hay ingresos para los filtros seleccionados
+      </div>
+    }
+
     <!-- Paginación -->
-    <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-50">
-      <p class="text-xs text-gray-400">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-5 pt-4 border-t border-gray-50">
+      <p class="text-xs text-gray-400 text-center sm:text-left order-2 sm:order-1">
         Mostrando {{ (paginaActual - 1) * registrosPorPagina + 1 }}–{{ registrosMostrados }} de {{ ingresosFiltrados.length }} registros
       </p>
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1 order-1 sm:order-2">
         <button
           class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
           [disabled]="paginaActual === 1"
@@ -164,12 +190,13 @@
 
 </div>
 
-<!-- Modal -->
+<!-- Modal: Nuevo Ingreso -->
 @if (modalAbierto) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" (click)="cerrarModal()"></div>
     <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
 
+      <!-- Cabecera -->
       <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
         <div>
           <h3 class="text-base font-bold text-gray-900">Nuevo ingreso</h3>
@@ -182,8 +209,8 @@
         </button>
       </div>
 
+      <!-- Campos -->
       <div class="px-6 py-5 space-y-4">
-
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Concepto</label>
           <input
@@ -192,7 +219,6 @@
             class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
             [(ngModel)]="nuevoConcepto">
         </div>
-
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Monto</label>
           <div class="relative">
@@ -204,7 +230,6 @@
               [(ngModel)]="nuevoMonto">
           </div>
         </div>
-
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Categoría</label>
           <div class="relative">
@@ -222,22 +247,18 @@
                 @for (cat of categorias; track cat) {
                   <button
                     type="button"
-                    class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                    class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
                     [class.text-emerald-600]="cat === nuevaCategoria"
                     [class.font-medium]="cat === nuevaCategoria"
                     [class.text-gray-700]="cat !== nuevaCategoria"
                     (click)="seleccionarCategoria(cat)">
                     {{ cat }}
-                    @if (cat === nuevaCategoria) {
-                      <span class="text-emerald-500 text-xs">✓</span>
-                    }
                   </button>
                 }
               </div>
             }
           </div>
         </div>
-
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Fecha</label>
           <input
@@ -245,9 +266,9 @@
             class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all text-gray-600"
             [(ngModel)]="nuevaFecha">
         </div>
-
       </div>
 
+      <!-- Acciones -->
       <div class="px-6 pb-6 flex gap-3">
         <button
           class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors"

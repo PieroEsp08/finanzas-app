@@ -1,45 +1,74 @@
-<div class="card card--accent-top {{ color }} p-6">
+<!-- Layout horizontal (móvil) / vertical (desktop) -->
+@if (layout === 'list') {
+  <div class="card card--accent-top {{ color }} p-3 md:p-5 flex flex-row md:flex-col justify-between items-center md:items-start md:min-h-[140px] gap-3 w-full">
 
-  <div class="flex items-start justify-between mb-4">
-
-    <div
-      class="icon-box"
-      [ngClass]="{
-        'bg-emerald-50 text-emerald-600': color === 'emerald',
-        'bg-blue-50 text-blue-600': color === 'blue',
-        'bg-red-50 text-red-500': color === 'red',
-        'bg-amber-50 text-amber-500': color === 'amber'
-      }"
-    >
-      <lucide-icon [img]="icono" class="w-5 h-5" ></lucide-icon>
-
+    <!-- Icono + título en móvil -->
+    <div class="flex items-center gap-3 shrink-0">
+      <div class="icon-box shrink-0" [ngClass]="{
+          'bg-emerald-50 text-emerald-600': color === 'emerald',
+          'bg-blue-50   text-blue-600':    color === 'blue',
+          'bg-red-50    text-red-500':     color === 'red',
+          'bg-amber-50  text-amber-500':   color === 'amber'
+        }">
+        <lucide-icon [img]="icono" class="w-5 h-5"></lucide-icon>
+      </div>
+      <p class="text-xs text-gray-400 font-medium leading-tight truncate md:hidden">{{ titulo }}</p>
     </div>
 
-    <span
-      class="badge"
-      [ngClass]="{
-        'bg-emerald-50 text-emerald-600': color === 'emerald',
-        'bg-blue-50 text-blue-600': color === 'blue',
-        'bg-red-50 text-red-500': color === 'red',
-        'bg-amber-50 text-amber-500': color === 'amber'
-      }"
-    >
-      <i class="fa-solid fa-arrow-up text-[10px] mr-1"></i>
-      {{ porcentaje }}
-    </span>
+    <!-- Monto + descripción -->
+    <div class="text-right md:text-left md:mt-auto flex-1 md:w-full min-w-0 pr-1 md:pr-0">
+      <p class="text-xs text-gray-400 mb-1 hidden md:block">{{ titulo }}</p>
+      <p class="text-base md:text-xl font-bold text-gray-900 truncate tracking-tight">{{ monto }}</p>
+      <p class="text-xs text-gray-400 mt-1 hidden md:block truncate">{{ descripcion }}</p>
+    </div>
+
+    <!-- Badge porcentaje -->
+    <div class="shrink-0 md:absolute md:top-5 md:right-5">
+      <span class="badge inline-flex items-center px-1.5 py-0.5 text-[10px]" [ngClass]="{
+          'bg-emerald-50 text-emerald-600': color === 'emerald',
+          'bg-blue-50   text-blue-600':    color === 'blue',
+          'bg-red-50    text-red-500':     color === 'red',
+          'bg-amber-50  text-amber-500':   color === 'amber'
+        }">
+        <i class="fa-solid fa-arrow-up text-[9px] mr-1"></i>
+        {{ porcentaje }}
+      </span>
+    </div>
 
   </div>
+}
 
-  <p class="text-sm text-gray-400 mb-1">
-    {{ titulo }}
-  </p>
+<!-- Layout vertical estándar -->
+@else {
+  <div class="card card--accent-top {{ color }} p-4 sm:p-5 flex flex-col justify-between items-start sm:min-h-[140px] gap-3 w-full">
 
-  <p class="text-2xl font-bold text-gray-900">
-    {{ monto }}
-  </p>
+    <!-- Icono + badge -->
+    <div class="flex items-center justify-between w-full">
+      <div class="icon-box shrink-0" [ngClass]="{
+          'bg-emerald-50 text-emerald-600': color === 'emerald',
+          'bg-blue-50   text-blue-600':    color === 'blue',
+          'bg-red-50    text-red-500':     color === 'red',
+          'bg-amber-50  text-amber-500':   color === 'amber'
+        }">
+        <lucide-icon [img]="icono" class="w-5 h-5"></lucide-icon>
+      </div>
+      <span class="badge inline-flex items-center px-1.5 py-0.5 text-[10px]" [ngClass]="{
+          'bg-emerald-50 text-emerald-600': color === 'emerald',
+          'bg-blue-50   text-blue-600':    color === 'blue',
+          'bg-red-50    text-red-500':     color === 'red',
+          'bg-amber-50  text-amber-500':   color === 'amber'
+        }">
+        <i class="fa-solid fa-arrow-up text-[9px] mr-1"></i>
+        {{ porcentaje }}
+      </span>
+    </div>
 
-  <p class="text-xs text-gray-400 mt-2">
-    {{ descripcion }}
-  </p>
+    <!-- Monto + descripción -->
+    <div class="w-full text-left sm:mt-auto">
+      <p class="text-xs text-gray-400 mb-0.5">{{ titulo }}</p>
+      <p class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 truncate tracking-tight">{{ monto }}</p>
+      <p class="text-xs text-gray-400 mt-1 hidden sm:block truncate">{{ descripcion }}</p>
+    </div>
 
-</div>
+  </div>
+}

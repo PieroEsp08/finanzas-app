@@ -35,7 +35,7 @@ export class FinanzasPage {
   };
 
   readonly meses = [
-    { valor: '',   label: 'Todos los meses' },
+    { valor: '',   label: 'Todos' },
     { valor: '01', label: 'Enero' },
     { valor: '02', label: 'Febrero' },
     { valor: '03', label: 'Marzo' },
