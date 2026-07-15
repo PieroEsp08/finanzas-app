@@ -1,9 +1,6 @@
 import { Component, HostListener, OnInit, inject, Output, EventEmitter } from '@angular/core';
-import {
-  ActivatedRoute,
-  NavigationEnd,
-  Router
-} from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 import {
   Bell,
   ChevronDown,
@@ -13,7 +10,7 @@ import {
   Search,
   Settings,
   User,
-  Menu // 1. Agregamos el icono de menú
+  Menu 
 } from 'lucide-angular';
 import { filter } from 'rxjs/operators';
 
@@ -27,8 +24,8 @@ export class Header implements OnInit {
 
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
+  private authService = inject(AuthService); // <-- Inyectamos el servicio de autenticación
 
-  // 2. Declaramos la salida para conectar con el MainLayout
   @Output() clickMenu = new EventEmitter<void>();
 
   tituloHeader = 'FinanzasApp';
@@ -45,7 +42,7 @@ export class Header implements OnInit {
     creditCard: CreditCard,
     settings: Settings,
     logout: LogOut,
-    menu: Menu, // 3. Registramos el icono en tu lista
+    menu: Menu, 
   };
 
   ngOnInit(): void {
@@ -60,9 +57,23 @@ export class Header implements OnInit {
       });
   }
 
-  // 4. Método que gatilla el grito hacia el Layout principal
   onMenuClick(): void {
     this.clickMenu.emit();
+  }
+
+  async cerrarSesion(): Promise<void> {
+    try {
+      const { error } = await this.authService.signOut();
+      if (error) {
+        console.error('Error al cerrar sesión desde el Header:', error.message);
+        return;
+      }
+      
+      this.showProfile = false;
+      this.router.navigate(['/auth']); 
+    } catch (err) {
+      console.error('Error inesperado al cerrar sesión desde el Header:', err);
+    }
   }
 
   private actualizarHeader(): void {

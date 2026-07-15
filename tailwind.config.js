@@ -7,5 +7,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-  presets: [require('@spartan-ng/ui-core/hlm-tailwind-preset')]
 }

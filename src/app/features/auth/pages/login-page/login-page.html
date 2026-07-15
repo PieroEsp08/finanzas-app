@@ -120,11 +120,15 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5">Correo electrónico</label>
               <div class="relative">
-                <input type="email" [(ngModel)]="loginEmail" placeholder="tu@correo.com"
-                  class="w-full border rounded-xl px-4 py-2.5 pl-12 text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-500/10"
-                  [class.border-gray-200]="!errores['email']"
-                  [class.focus:border-emerald-400]="!errores['email']"
-                  [class.border-red-400]="errores['email']">
+                <input type="email"
+                  [(ngModel)]="loginEmail"
+                  placeholder="tu@correo.com"
+                  class="w-full border rounded-xl px-4 py-2.5 pl-12 text-sm outline-none transition-all focus:ring-2"
+                  [class.border-gray-200]="!errores['general'] && !errores['email']"
+                  [class.focus:border-emerald-400]="!errores['general'] && !errores['email']"
+                  [class.focus:ring-emerald-500\/10]="!errores['general'] && !errores['email']"
+                  [class.border-red-400]="errores['general'] || errores['email']"
+                  [class.focus:ring-red-500\/10]="errores['general'] || errores['email']">
                 <lucide-icon [img]="icons.mail" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
               </div>
               @if (errores['email']) {
@@ -136,11 +140,15 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
               <div class="relative">
-                <input [type]="verPassword ? 'text' : 'password'" [(ngModel)]="loginPassword" placeholder="Ingresa tu contraseña"
-                  class="w-full border rounded-xl px-4 py-2.5 pl-12 pr-11 text-sm outline-none transition-all focus:ring-2 focus:ring-emerald-500/10"
-                  [class.border-gray-200]="!errores['password']"
-                  [class.focus:border-emerald-400]="!errores['password']"
-                  [class.border-red-400]="errores['password']">
+                <input [type]="verPassword ? 'text' : 'password'"
+                  [(ngModel)]="loginPassword"
+                  placeholder="Ingresa tu contraseña"
+                  class="w-full border rounded-xl px-4 py-2.5 pl-12 pr-11 text-sm outline-none transition-all focus:ring-2"
+                  [class.border-gray-200]="!errores['general'] && !errores['password']"
+                  [class.focus:border-emerald-400]="!errores['general'] && !errores['password']"
+                  [class.focus:ring-emerald-500\/10]="!errores['general'] && !errores['password']"
+                  [class.border-red-400]="errores['general'] || errores['password']"
+                  [class.focus:ring-red-500\/10]="errores['general'] || errores['password']">
                 <lucide-icon [img]="icons.lock" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" color="currentColor"></lucide-icon>
                 <button type="button" (click)="verPassword = !verPassword"
                   class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
@@ -152,19 +160,33 @@
               }
             </div>
 
+            @if (errores['general']) {
+              <div class="flex items-center gap-3 px-4 py-3 rounded-2xl mt-3"
+                  style="background: #fff1f2; border: 1px solid #fecdd3; animation: toastEntrada 0.3s ease forwards">
+                <div class="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-red-600">{{ errores['general'] }}</p>
+                </div>
+              </div>
+            }
+
             <!-- Recordarme + olvidé contraseña -->
-            <div class="flex items-center justify-between">
-              <label class="flex items-center gap-2 cursor-pointer" (click)="terminosAceptados = !terminosAceptados">
-                <div class="flex items-center justify-center transition-all"
-                  style="width:18px;height:18px;border-radius:6px;border:1.5px solid"
-                  [style.background]="terminosAceptados ? '#10b981' : '#fff'"
-                  [style.border-color]="terminosAceptados ? '#10b981' : '#d1d5db'">
-                  @if (terminosAceptados) {
-                    <lucide-icon [img]="icons.check" class="w-2.5 h-2.5" color="white"></lucide-icon>
+            <div class="flex items-center justify-between mt-2">
+              <div (click)="recordarme = !recordarme" class="flex items-center gap-2 cursor-pointer select-none group">
+                <div class="flex items-center justify-center transition-all duration-200 group-hover:border-emerald-400"
+                    style="width:19px;height:19px;border-radius:6px;border:1.5px solid"
+                    [style.background]="recordarme ? '#10b981' : '#fff'"
+                    [style.border-color]="recordarme ? '#10b981' : '#d1d5db'">
+                  @if (recordarme) {
+                    <lucide-icon [img]="icons.check" class="w-3 h-3" color="white" [strokeWidth]="3"></lucide-icon>
                   }
                 </div>
-                <span class="text-sm text-gray-500">Recordarme</span>
-              </label>
+                <span class="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">Recordarme</span>
+              </div>
               <button type="button" class="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
                 ¿Olvidaste tu contraseña?
               </button>
@@ -258,6 +280,8 @@
               }
             </div>
 
+              
+
             <!-- Confirmar contraseña -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5">Confirmar contraseña</label>
@@ -279,22 +303,30 @@
             </div>
 
             <!-- Términos y condiciones -->
-            <label class="flex items-start gap-2.5 cursor-pointer" (click)="terminosAceptados = !terminosAceptados">
-              <div class="shrink-0 flex items-center justify-center transition-all mt-0.5"
-                style="width:18px;height:18px;border-radius:6px;border:1.5px solid"
-                [style.background]="terminosAceptados ? '#10b981' : '#fff'"
-                [style.border-color]="terminosAceptados ? '#10b981' : '#d1d5db'">
-                @if (terminosAceptados) {
-                  <lucide-icon [img]="icons.check" class="w-2.5 h-2.5" color="white"></lucide-icon>
-                }
+            <div class="flex flex-col gap-2">
+              <div (click)="terminosAceptados = !terminosAceptados" 
+                  class="flex items-start gap-2.5 cursor-pointer select-none group">
+                <div class="shrink-0 flex items-center justify-center transition-all duration-200 mt-0.5 group-hover:border-emerald-400"
+                    style="width:19px;height:19px;border-radius:6px;border:1.5px solid"
+                    [style.background]="terminosAceptados ? '#10b981' : '#fff'"
+                    [style.border-color]="terminosAceptados ? '#10b981' : '#d1d5db'">
+                    
+                  @if (terminosAceptados) {
+                    <lucide-icon [img]="icons.check" class="w-3 h-3" color="white" [strokeWidth]="3"></lucide-icon>
+                  }
+                </div>
+                <span class="text-sm text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors">
+                  Acepto los 
+                  <a (click)="$event.stopPropagation()" 
+                    class="text-emerald-600 font-semibold hover:underline cursor-pointer">
+                    términos de servicio
+                  </a>
+                </span>
               </div>
-              <span class="text-sm text-gray-500 leading-relaxed">
-                Acepto los <a class="text-emerald-600 font-semibold hover:underline">términos de servicio</a>
-              </span>
-            </label>
-            @if (errores['terminos']) {
-              <p class="text-xs text-red-500 -mt-2">{{ errores['terminos'] }}</p>
-            }
+              @if (errores['terminos']) {
+                <p class="text-xs text-red-500 mt-1">{{ errores['terminos'] }}</p>
+              }
+            </div>
 
             <!-- Botón submit -->
             <button type="button" (click)="crearCuenta()"
@@ -352,3 +384,67 @@
   </div>
 
 </div>
+
+
+@if (registroExitoso) {
+
+  <!-- Backdrop -->
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+       style="animation: modalFadeIn 0.2s ease forwards">
+
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+
+    <!-- Modal -->
+    <div class="relative w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl"
+         style="background: #ffffff; border: 1px solid rgba(0,0,0,0.05);
+                animation: modalScaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards">
+
+      <div class="absolute inset-0 pointer-events-none"
+           style="background: radial-gradient(circle at 50% 20%, rgba(16,185,129,0.06), transparent 60%)">
+      </div>
+
+      <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full pointer-events-none"
+           style="border: 2.5px solid rgba(16,185,129,0.18)"></div>
+      <div class="absolute -bottom-12 -left-12 w-40 h-40 rounded-full pointer-events-none"
+           style="border: 2.5px solid rgba(16,185,129,0.18)"></div>
+
+      <div class="relative z-10 flex flex-col items-center text-center px-8 py-12">
+
+        <!-- Ícono check -->
+        <div class="w-20 h-20 rounded-full flex items-center justify-center mb-6"
+             style="background: linear-gradient(135deg, #10b981, #059669);
+                    box-shadow: 0 10px 20px rgba(16,185,129,0.3);
+                    animation: modalBounceShort 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both">
+          <svg class="w-9 h-9" fill="none" viewBox="0 0 24 24"
+               stroke="#ffffff" stroke-width="3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+
+        <!-- Contenido -->
+        <div class="w-full flex flex-col items-center"
+             style="animation: fadeUp 0.4s ease 0.3s both">
+
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full mb-4"
+                style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0">
+            Registro exitoso
+          </span>
+
+          <h3 class="text-xl font-extrabold mb-2" style="color: #1e293b">Tu cuenta está lista</h3>
+
+          <p class="text-sm leading-relaxed mb-8 px-2" style="color: #64748b">
+            Te enviamos un correo de verificación. Una vez confirmado, podrás iniciar sesión.
+          </p>
+
+          <button
+            class="w-full py-3 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 hover:brightness-105 active:scale-[0.99]"
+            style="background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 10px 25px rgba(16,185,129,0.3)"
+            (click)="irAlLogin()">
+            Aceptar
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+}

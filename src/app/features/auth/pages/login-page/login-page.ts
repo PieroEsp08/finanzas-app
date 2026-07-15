@@ -1,145 +1,199 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import {
-  LucideAngularModule,
-  Leaf, Mail, Lock, Eye, EyeOff,
-  User, PieChart, Target, ShieldCheck, Check
-} from 'lucide-angular';
+import { LucideAngularModule, Leaf, BarChart2, Target, Shield, Mail, Lock, Eye, EyeOff, User, Check } from 'lucide-angular';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login-page',
-  imports: [CommonModule, FormsModule, LucideAngularModule],
+  imports: [FormsModule, CommonModule, LucideAngularModule],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class LoginPage {
 
+  icons = {
+    logo: Leaf, chart: BarChart2, target: Target, shield: Shield,
+    mail: Mail, lock: Lock, eye: Eye, eyeOff: EyeOff, user: User, check: Check
+  };
+
   modo: 'login' | 'registro' = 'login';
+  cargando = false;
 
   loginEmail = '';
   loginPassword = '';
+  recordarme = false;
+  verPassword = false;
 
   registroNombre = '';
   registroEmail = '';
   registroPassword = '';
   registroPassword2 = '';
-  terminosAceptados = false;
-
-  verPassword = false;
   verPassword2 = false;
-  cargando = false;
-  fortaleza = 0;
-  fortalezaLabel = '';
-  fortalezaColor = '';
+  terminosAceptados = false;
 
   errores: Record<string, string> = {};
 
-  icons = {
-    logo: Leaf,
-    mail: Mail,
-    lock: Lock,
-    eye: Eye,
-    eyeOff: EyeOff,
-    user: User,
-    chart: PieChart,
-    target: Target,
-    shield: ShieldCheck,
-    check: Check,
-  };
+  fortaleza = 0;
+  fortalezaColor = '';
+  fortalezaLabel = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
+
 
   setModo(modo: 'login' | 'registro'): void {
     this.modo = modo;
     this.errores = {};
-    this.fortaleza = 0;
-    this.fortalezaLabel = '';
   }
 
-  validarEmail(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  async iniciarSesion(): Promise<void> {
+    this.errores = {};
+
+    if (!this.loginEmail) {
+      this.errores['email'] = 'El correo es requerido';
+      return;
+    }
+    if (!this.loginPassword) {
+      this.errores['password'] = 'La contraseña es requerida';
+      return;
+    }
+
+    this.cargando = true;
+    this.cdr.detectChanges();
+
+    const { error } = await this.authService.signIn(this.loginEmail, this.loginPassword);
+
+    this.cargando = false;
+    this.cdr.detectChanges();
+
+    if (error) {
+      this.errores['general'] = 'Correo o contraseña incorrectos';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.authService.configurarPersistencia(this.recordarme);
+    this.router.navigate(['/dashboard']);
+  }
+
+  async crearCuenta(): Promise<void> {
+    this.errores = {};
+
+    if (!this.registroNombre) {
+      this.errores['nombre'] = 'El nombre es requerido';
+      return;
+    }
+    if (!this.registroEmail) {
+      this.errores['email'] = 'El correo es requerido';
+      return;
+    }
+    if (!this.registroPassword || this.registroPassword.length < 6) {
+      this.errores['password'] = 'La contraseña debe tener al menos 6 caracteres';
+      return;
+    }
+    if (this.registroPassword !== this.registroPassword2) {
+      this.errores['password2'] = 'Las contraseñas no coinciden';
+      return;
+    }
+    if (!this.terminosAceptados) {
+      this.errores['terminos'] = 'Debes aceptar los términos de servicio';
+      return;
+    }
+
+    this.cargando = true;
+    this.cdr.detectChanges();
+
+    const { error } = await this.authService.signUp(
+      this.registroEmail,
+      this.registroPassword,
+      this.registroNombre
+    );
+
+    this.cargando = false;
+    this.cdr.detectChanges();
+
+    if (error) {
+    // Convertimos el mensaje a minúsculas para evaluar variaciones de Supabase/Firebase/Custom
+    const mensajeError = error.message?.toLowerCase() || '';
+
+    if (mensajeError.includes('already registered') || mensajeError.includes('already exists') || error.status === 422) {
+      this.errores['email'] = 'Este correo ya está registrado';
+    } else if (mensajeError.includes('invalid email') || mensajeError.includes('format')) {
+      this.errores['email'] = 'El formato del correo electrónico no es válido';
+    } else {
+      // Un fallback genérico por si falla la conexión o hay otro inconveniente
+      this.errores['email'] = 'Hubo un error al registrar la cuenta. Inténtalo de nuevo.';
+    }
+
+    this.cdr.detectChanges();
+    return;
+  }
+
+    this.registroExitoso = true;
+    this.cdr.detectChanges();
   }
 
   calcularFortaleza(): void {
     const p = this.registroPassword;
-    let s = 0;
-    if (p.length >= 8) s++;
-    if (p.length >= 12) s++;
-    if (/[A-Z]/.test(p)) s++;
-    if (/[0-9]/.test(p)) s++;
-    if (/[^A-Za-z0-9]/.test(p)) s++;
 
-    const niveles = [
-      { w: 0,   c: 'transparent', t: '' },
-      { w: 20,  c: '#ef4444',     t: 'Muy débil' },
-      { w: 40,  c: '#f97316',     t: 'Débil' },
-      { w: 60,  c: '#f59e0b',     t: 'Regular' },
-      { w: 80,  c: '#10b981',     t: 'Fuerte' },
-      { w: 100, c: '#059669',     t: 'Muy fuerte' },
-    ];
-    this.fortaleza = niveles[s].w;
-    this.fortalezaLabel = niveles[s].t;
-    this.fortalezaColor = niveles[s].c;
+    // Si el campo está vacío, reiniciamos todo a cero y salimos de la función
+    if (!p) {
+      this.fortaleza = 0;
+      this.fortalezaColor = 'transparent'; // O el color de fondo por defecto de tu barra vacía
+      this.fortalezaLabel = '';
+      return;
+    }
+
+    let puntos = 0;
+
+    if (p.length >= 6)  puntos++;
+    if (p.length >= 10) puntos++;
+    if (/[A-Z]/.test(p)) puntos++;
+    if (/[0-9]/.test(p)) puntos++;
+    if (/[^A-Za-z0-9]/.test(p)) puntos++;
+
+    this.fortaleza = (puntos / 5) * 100;
+
+    if (puntos <= 2) {
+      this.fortalezaColor = '#ef4444';
+      this.fortalezaLabel = 'Débil';
+    } else if (puntos <= 3) {
+      this.fortalezaColor = '#f59e0b';
+      this.fortalezaLabel = 'Regular';
+    } else {
+      this.fortalezaColor = '#10b981';
+      this.fortalezaLabel = 'Fuerte';
+    }
   }
 
-  iniciarSesion(): void {
-    this.errores = {};
-    let ok = true;
+  registroExitoso = false;
 
-    if (!this.loginEmail) {
-      this.errores['email'] = 'Ingresa tu correo electrónico'; ok = false;
-    } else if (!this.validarEmail(this.loginEmail)) {
-      this.errores['email'] = 'El formato del correo no es válido'; ok = false;
-    }
-    if (!this.loginPassword) {
-      this.errores['password'] = 'Ingresa tu contraseña'; ok = false;
-    } else if (this.loginPassword.length < 6) {
-      this.errores['password'] = 'Mínimo 6 caracteres'; ok = false;
-    }
-    if (!ok) return;
+  irAlLogin(): void {
+  // 1. Ocultamos el modal de éxito
+  this.registroExitoso = false;
 
-    this.cargando = true;
-    setTimeout(() => {
-      this.cargando = false;
-      this.router.navigate(['/dashboard']);
-    }, 1400);
-  }
+  // 2. Limpiamos todas las cajas de texto del formulario
+  this.registroNombre = '';
+  this.registroEmail = '';
+  this.registroPassword = '';
+  this.registroPassword2 = '';
+  this.terminosAceptados = false;
 
-  crearCuenta(): void {
-    this.errores = {};
-    let ok = true;
+  this.calcularFortaleza();
 
-    if (!this.registroNombre) {
-      this.errores['nombre'] = 'Ingresa tu nombre completo'; ok = false;
-    } else if (this.registroNombre.length < 3) {
-      this.errores['nombre'] = 'Mínimo 3 caracteres'; ok = false;
-    }
-    if (!this.registroEmail) {
-      this.errores['email'] = 'Ingresa tu correo electrónico'; ok = false;
-    } else if (!this.validarEmail(this.registroEmail)) {
-      this.errores['email'] = 'Formato de correo no válido'; ok = false;
-    }
-    if (!this.registroPassword) {
-      this.errores['password'] = 'Crea una contraseña'; ok = false;
-    } else if (this.registroPassword.length < 8) {
-      this.errores['password'] = 'Mínimo 8 caracteres'; ok = false;
-    }
-    if (!this.registroPassword2) {
-      this.errores['password2'] = 'Confirma tu contraseña'; ok = false;
-    } else if (this.registroPassword !== this.registroPassword2) {
-      this.errores['password2'] = 'Las contraseñas no coinciden'; ok = false;
-    }
-    if (!this.terminosAceptados) {
-      this.errores['terminos'] = 'Debes aceptar los términos'; ok = false;
-    }
-    if (!ok) return;
+  // 3. Limpiamos el historial de errores previos
+  this.errores = {};
 
-    this.cargando = true;
-    setTimeout(() => {
-      this.cargando = false;
-      this.router.navigate(['/dashboard']);
-    }, 1600);
-  }
+  // 4. Cambiamos a la pantalla de inicio de sesión
+  this.modo = 'login';
+
+  // 5. Notificamos a Angular el cambio de estado de las variables
+  this.cdr.detectChanges();
+}
 }
