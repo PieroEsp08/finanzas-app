@@ -1,0 +1,63 @@
+<!-- Contenedor flotante superior derecho (Éxito, Error, Loading) -->
+<!-- Contenedor único en la esquina INFERIOR DERECHA -->
+<div class="fixed bottom-6 right-6 z-[9999] flex flex-col-reverse gap-2.5 max-w-sm w-[calc(100%-32px)] sm:w-full pointer-events-none">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div class="pointer-events-auto relative flex items-start gap-3 p-4 bg-white/95 backdrop-blur-md border rounded-2xl shadow-xl transition-all duration-300 animate-toast-in overflow-hidden"
+         [ngClass]="{
+           'border-emerald-500/20 shadow-emerald-500/5': toast.type === 'success',
+           'border-red-200 bg-red-50/90 shadow-red-500/5': toast.type === 'error',
+           'border-blue-500/20 shadow-blue-500/5': toast.type === 'loading',
+           'border-gray-200/80 shadow-gray-900/5': toast.type === 'undo'
+         }">
+
+      <!-- Ícono según el tipo -->
+      @switch (toast.type) {
+        @case ('success') {
+          <div class="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 text-emerald-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+        }
+        @case ('error') {
+          <div class="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center shrink-0 text-red-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </div>
+        }
+        @case ('loading') {
+          <div class="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-500 animate-spin">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+          </div>
+        }
+        @case ('undo') {
+          <div class="w-8 h-8 rounded-xl bg-red-50 flex items-center justify-center shrink-0 text-red-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </div>
+        }
+      }
+
+      <!-- Contenido de texto -->
+      <div class="flex-1 min-w-0">
+        <p class="text-xs font-bold text-gray-900" [class.text-red-800]="toast.type === 'error'">{{ toast.title }}</p>
+        @if (toast.message) {
+          <p class="text-[11px] text-gray-400 mt-0.5 leading-relaxed truncate" [class.text-red-600/70]="toast.type === 'error'">{{ toast.message }}</p>
+        }
+      </div>
+
+      <!-- Acciones: Botón DESHACER (si es undo) o Botón X (para el resto) -->
+      @if (toast.type === 'undo') {
+        <button (click)="ejecutarUndo(toast)" 
+                class="shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition-colors cursor-pointer">
+          DESHACER
+        </button>
+      } @else {
+        <button (click)="cerrar(toast.id)" class="shrink-0 text-gray-400 hover:text-gray-600 p-1 rounded-lg transition-colors cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      }
+
+      <!-- Barra de progreso exclusiva para deshacer -->
+      @if (toast.type === 'undo') {
+        <div class="absolute bottom-0 left-0 h-[2px] bg-emerald-500/40 w-full animate-toast-progress"></div>
+      }
+    </div>
+  }
+</div>

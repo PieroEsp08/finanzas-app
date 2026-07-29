@@ -2,40 +2,22 @@
 
   <!-- Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">
-    <app-card-metrica
-      layout="list"
-      titulo="Total gastos"
+    <app-card-metrica layout="list" titulo="Total gastos"
       [monto]="'S/ ' + totalGastos.toLocaleString('es-PE')"
-      descripcion="Este mes"
-      porcentaje="3.2%"
-      color="red"
-      [icono]="trendingDownIcon"
-    />
-    <app-card-metrica
-      layout="list"
-      titulo="Transacciones"
+      descripcion="Este mes" porcentaje="5.4%" color="red" [icono]="trendingDownIcon"/>
+    <app-card-metrica layout="list" titulo="Transacciones"
       [monto]="totalTransacciones.toString()"
-      descripcion="Gastos registrados"
-      porcentaje="5.1%"
-      color="blue"
-      [icono]="hashIcon"
-    />
-    <app-card-metrica
-      layout="list"
-      titulo="Promedio por gasto"
+      descripcion="Gastos registrados" porcentaje="2.1%" color="blue" [icono]="hashIcon"/>
+    <app-card-metrica layout="list" titulo="Promedio por gasto"
       [monto]="'S/ ' + promedioPorGasto.toLocaleString('es-PE')"
-      descripcion="Este mes"
-      porcentaje="2.3%"
-      color="amber"
-      [icono]="barChartIcon"
-    />
+      descripcion="Este mes" porcentaje="1.8%" color="amber" [icono]="barChartIcon"/>
   </div>
 
-  <!-- Tabla con filtro -->
-  <div class="bg-white border border-gray-100 rounded-2xl p-4 md:p-6">
+  <!-- Tabla -->
+  <div class="bg-white border border-gray-100 rounded-2xl p-4 md:p-6 md:h-[515px] flex flex-col justify-between">
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 shrink-0">
       <div>
         <h2 class="text-base font-semibold text-gray-800">Mis gastos</h2>
         <p class="text-xs text-gray-400 mt-0.5">Historial de gastos registrados</p>
@@ -44,33 +26,78 @@
 
         <!-- Dropdown categoría -->
         <div class="relative flex-1 sm:flex-none">
-          <button
-            type="button"
-            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-emerald-400 transition-all"
+          <button type="button"
+            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-rose-400 transition-all cursor-pointer"
             (click)="dropdownFiltroAbierto = !dropdownFiltroAbierto">
             <span class="truncate">{{ labelFiltroActivo }}</span>
             <span class="text-gray-400 text-[10px]">▾</span>
           </button>
+
           @if (dropdownFiltroAbierto) {
-            <div class="absolute right-0 z-10 w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
-              <button
-                type="button"
-                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
-                [class.text-emerald-600]="categoriaFiltro === 'todas'"
+            <div class="absolute right-0 z-10 w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate max-h-64 overflow-y-auto">
+              
+              <!-- Opción: Todas las categorías -->
+              <button type="button"
+                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
+                [class.text-rose-600]="categoriaFiltro === 'todas'"
                 [class.font-medium]="categoriaFiltro === 'todas'"
                 [class.text-gray-700]="categoriaFiltro !== 'todas'"
                 (click)="seleccionarFiltro('todas')">
-                Todas las categorías
+                <span class="truncate">Todas las categorías</span>
+                
+                @if (categoriaFiltro === 'todas') {
+                  <span class="text-rose-600 font-bold text-xs shrink-0 ml-2">✓</span>
+                }
               </button>
-              @for (cat of categorias; track cat) {
-                <button
-                  type="button"
-                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
-                  [class.text-emerald-600]="cat === categoriaFiltro"
-                  [class.font-medium]="cat === categoriaFiltro"
-                  [class.text-gray-700]="cat !== categoriaFiltro"
-                  (click)="seleccionarFiltro(cat)">
-                  {{ cat }}
+
+              <!-- Lista de categorías -->
+              @for (cat of categoriasParaFiltro; track cat.id) {
+                <button type="button"
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer gap-2"
+                  [class.text-rose-600]="cat.id === categoriaFiltro && cat.activa !== false"
+                  [class.font-medium]="cat.id === categoriaFiltro"
+                  [class.text-gray-700]="cat.id !== categoriaFiltro && cat.activa !== false"
+                  [class.text-gray-400]="cat.activa === false"
+                  (click)="seleccionarFiltro(cat.id!)">
+                  
+                  <div class="flex items-center gap-2 truncate">
+                    @if (cat.emoji) { 
+                      <span [class.opacity-50]="cat.activa === false">{{ cat.emoji }}</span> 
+                    }
+                    <span class="truncate">{{ cat.nombre }}</span>
+                  </div>
+
+                  <!-- Check solo para el elemento seleccionado -->
+                  @if (cat.id === categoriaFiltro) {
+                    <span class="text-rose-600 font-bold text-xs shrink-0">✓</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Dropdown ordenar -->
+        <div class="relative">
+          <button type="button"
+            class="text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center gap-2 hover:border-rose-400 transition-all cursor-pointer"
+            (click)="dropdownOrdenarAbierto = !dropdownOrdenarAbierto">
+            <span>{{ labelOrdenActivo }}</span>
+            <span class="text-gray-400 text-[10px]">▾</span>
+          </button>
+          @if (dropdownOrdenarAbierto) {
+            <div class="absolute right-0 z-10 w-44 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
+              @for (opcion of opcionesOrden; track opcion.valor) {
+                <button type="button"
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
+                  [class.text-rose-600]="ordenActual === opcion.valor"
+                  [class.font-medium]="ordenActual === opcion.valor"
+                  [class.text-gray-700]="ordenActual !== opcion.valor"
+                  (click)="seleccionarOrden(opcion.valor)">
+                  {{ opcion.label }}
+                  @if (ordenActual === opcion.valor) {
+                    <span class="text-rose-500 text-xs">✓</span>
+                  }
                 </button>
               }
             </div>
@@ -78,106 +105,183 @@
         </div>
 
         <button
-          class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl transition-colors shrink-0"
+          class="bg-rose-500 hover:bg-rose-600 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl transition-colors duration-150 shrink-0 cursor-pointer flex items-center gap-1.5"
           (click)="abrirModal()">
-          + Agregar
+          <lucide-icon [img]="icons.plus" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
+          <span>Agregar</span>
         </button>
       </div>
     </div>
 
-    <!-- Tabla (solo desktop) -->
-    <div class="hidden md:block">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-gray-100 text-left">
-            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Concepto</th>
-            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categoría</th>
-            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Fecha</th>
-            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Monto</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (gasto of gastosPaginados; track gasto.concepto) {
-            <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-              <td class="py-3.5 text-sm font-medium text-gray-800">{{ gasto.concepto }}</td>
-              <td class="py-3.5">
-                <span [class]="'text-xs font-medium border px-3 py-1 rounded-full ' + getColorCategoria(gasto.categoria)">
-                  {{ gasto.categoria }}
-                </span>
-              </td>
-              <td class="py-3.5 text-sm text-gray-500">{{ gasto.fecha }}</td>
-              <td class="py-3.5 text-sm font-bold text-red-500 text-right">
-                -S/ {{ gasto.monto.toLocaleString('es-PE') }}
-              </td>
-            </tr>
-          }
-          @for (vacia of filasVacias; track vacia) {
-            <tr class="border-b border-gray-50">
-              <td class="py-3.5">&nbsp;</td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+    <!-- Cuerpo -->
+    <div class="grow flex flex-col justify-center">
 
-    <!-- Cards (solo móvil) -->
-    <div class="block md:hidden space-y-3">
-      @for (gasto of gastosPaginados; track gasto.concepto) {
-        <div class="p-4 border border-gray-50 bg-gray-50/30 rounded-xl flex items-center justify-between gap-3">
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-gray-800 truncate">{{ gasto.concepto }}</p>
-            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-              <span [class]="'text-[10px] font-medium border px-2 py-0.5 rounded-full ' + getColorCategoria(gasto.categoria)">
-                {{ gasto.categoria }}
-              </span>
-              <span class="text-[11px] text-gray-400">{{ gasto.fecha }}</span>
-            </div>
-          </div>
-          <p class="text-sm font-bold text-red-500 shrink-0">
-            -S/ {{ gasto.monto.toLocaleString('es-PE') }}
-          </p>
+      @if (cargando) {
+        <div class="py-20 text-center text-sm text-gray-400 flex flex-col items-center justify-center gap-2 grow">
+          <div class="w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+          <span>Cargando gastos...</span>
         </div>
+      } @else {
+
+        <!-- Tabla desktop -->
+        <div class="hidden md:block grow">
+          <table class="w-full table-fixed">
+            <thead>
+              <tr class="border-b border-gray-100 text-left">
+                <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider w-[32%]">Concepto</th>
+                <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider w-[22%]">Categoría</th>
+                <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider w-[16%]">Fecha</th>
+                <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right w-[16%]">Monto</th>
+                <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right w-[14%]">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (gasto of gastosPaginados; track gasto.id) {
+                <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors h-[49px]">
+                  <td class="py-3.5 text-sm font-medium text-gray-800 truncate pr-2">{{ gasto.concepto }}</td>
+                  <td class="py-3.5">
+                    @let cat = getCategoria(gasto.categoriaId, gasto);
+                    <span class="text-xs font-medium border px-3 py-1 rounded-full inline-flex items-center gap-1"
+                          [style.backgroundColor]="(cat?.color || '#f43f5e') + '1A'"
+                          [style.color]="cat?.color || '#f43f5e'"
+                          [style.borderColor]="(cat?.color || '#f43f5e') + '33'">
+                      @if (cat?.emoji) {
+                        <span>{{ cat?.emoji }}</span>
+                      }
+                      <span class="truncate">{{ cat?.nombre ?? '—' }}</span>
+                    </span>
+                  </td>
+                  <td class="py-3.5 text-sm text-gray-500">{{ gasto.fecha | date:'dd/MM/yyyy' }}</td>
+                  <td class="py-3.5 text-sm font-bold text-rose-600 text-right whitespace-nowrap">
+                    -S/ {{ gasto.monto.toLocaleString('es-PE') }}
+                  </td>
+                  <td class="py-3.5">
+                    <div class="flex items-center justify-end gap-1">
+                      @if (gasto.notas) {
+                        <button
+                          class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-amber-400 hover:bg-amber-50 transition-colors cursor-pointer"
+                          (click)="verNota(gasto)"
+                          title="Ver nota">
+                          <lucide-icon [img]="icons.nota" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
+                        </button>
+                      }
+                      <button
+                        class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-blue-400 hover:bg-blue-50 transition-colors cursor-pointer"
+                        (click)="abrirModalEditar(gasto)"
+                        title="Editar">
+                        <lucide-icon [img]="icons.edit" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
+                      </button>
+                      <button
+                        class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-400 hover:bg-red-50 transition-colors cursor-pointer"
+                        (click)="abrirModalEliminar(gasto)"
+                        title="Eliminar">
+                        <lucide-icon [img]="icons.trash" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+              @if (gastosPaginados.length > 0) {
+                @for (vacia of filasVacias; track vacia) {
+                  <tr class="border-b border-gray-50/30 h-[49px]">
+                    <td class="py-3.5">&nbsp;</td><td></td><td></td><td></td><td></td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cards móvil -->
+        <div class="block md:hidden space-y-3 grow">
+          @for (gasto of gastosPaginados; track gasto.id) {
+            <div class="p-4 border border-gray-100 rounded-xl">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-medium text-gray-800 truncate">{{ gasto.concepto }}</p>
+                  <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                    @let catMob = getCategoria(gasto.categoriaId, gasto);
+                    <span class="text-[10px] font-medium border px-2 py-0.5 rounded-full inline-flex items-center gap-1"
+                          [style.backgroundColor]="(catMob?.color || '#f43f5e') + '1A'"
+                          [style.color]="catMob?.color || '#f43f5e'"
+                          [style.borderColor]="(catMob?.color || '#f43f5e') + '33'">
+                      @if (catMob?.emoji) {
+                        <span>{{ catMob?.emoji }}</span>
+                      }
+                      <span>{{ catMob?.nombre ?? '—' }}</span>
+                    </span>
+                    <span class="text-[11px] text-gray-400">{{ gasto.fecha | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                </div>
+                <p class="text-sm font-bold text-rose-600 shrink-0">
+                  -S/ {{ gasto.monto.toLocaleString('es-PE') }}
+                </p>
+              </div>
+              <!-- Acciones móvil -->
+              <div class="flex items-center gap-1 mt-3 pt-3 border-t border-gray-50 justify-end">
+                @if (gasto.notas) {
+                  <button
+                    class="flex items-center gap-1 text-xs text-amber-500 hover:bg-amber-50 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                    (click)="verNota(gasto)">
+                    <lucide-icon [img]="icons.nota" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
+                    Nota
+                  </button>
+                }
+                <button
+                  class="flex items-center gap-1 text-xs text-blue-500 hover:bg-blue-50 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                  (click)="abrirModalEditar(gasto)">
+                  <lucide-icon [img]="icons.edit" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
+                  Editar
+                </button>
+                <button
+                  class="flex items-center gap-1 text-xs text-red-500 hover:bg-red-50 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                  (click)="abrirModalEliminar(gasto)">
+                  <lucide-icon [img]="icons.trash" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Estado vacío -->
+        @if (gastosPaginados.length === 0) {
+          <div class="py-20 text-center grow flex flex-col items-center justify-center">
+            <div class="w-16 h-16 rounded-2xl bg-rose-50 flex items-center justify-center mb-4">
+              <lucide-icon [img]="trendingDownIcon" class="w-8 h-8 text-rose-300" [color]="'#fda4af'"></lucide-icon>
+            </div>
+            <p class="text-sm font-semibold text-gray-500 mb-1">Sin gastos registrados</p>
+            <p class="text-xs text-gray-400">
+              {{ categoriaFiltro === 'todas' ? 'Agrega tu primer gasto con el botón + Agregar' : 'No hay gastos para esta categoría' }}
+            </p>
+          </div>
+        }
+
       }
     </div>
 
-    <!-- Estado vacío -->
-    @if (gastosPaginados.length === 0) {
-      <div class="py-16 text-center text-sm text-gray-400">
-        No hay gastos para los filtros seleccionados
-      </div>
-    }
-
     <!-- Paginación -->
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-5 pt-4 border-t border-gray-50">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-5 pt-4 border-t border-gray-50 shrink-0">
       <p class="text-xs text-gray-400 text-center sm:text-left order-2 sm:order-1">
-        Mostrando {{ (paginaActual - 1) * registrosPorPagina + 1 }}–{{ registrosMostrados }} de {{ gastosFiltrados.length }} registros
+        Mostrando {{ gastosPaginados.length > 0 ? (paginaActual - 1) * registrosPorPagina + 1 : 0 }}–{{ registrosMostrados }} de {{ gastosFiltrados.length }} registros
       </p>
       <div class="flex items-center gap-1 order-1 sm:order-2">
         <button
-          class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
-          [disabled]="paginaActual === 1"
-          (click)="cambiarPagina(paginaActual - 1)">
-          ‹
-        </button>
+          class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30 cursor-pointer"
+          [disabled]="paginaActual === 1 || gastosPaginados.length === 0"
+          (click)="cambiarPagina(paginaActual - 1)">‹</button>
         @for (pagina of paginas; track pagina) {
           <button
-            class="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
-            [class.bg-emerald-500]="pagina === paginaActual"
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors cursor-pointer"
+            [class.bg-rose-500]="pagina === paginaActual"
             [class.text-white]="pagina === paginaActual"
             [class.text-gray-500]="pagina !== paginaActual"
-            (click)="cambiarPagina(pagina)">
-            {{ pagina }}
-          </button>
+            (click)="cambiarPagina(pagina)">{{ pagina }}</button>
         }
         <button
-          class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
-          [disabled]="paginaActual === totalPaginas"
-          (click)="cambiarPagina(paginaActual + 1)">
-          ›
-        </button>
+          class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30 cursor-pointer"
+          [disabled]="paginaActual === totalPaginas || gastosPaginados.length === 0"
+          (click)="cambiarPagina(paginaActual + 1)">›</button>
       </div>
     </div>
 
@@ -185,100 +289,133 @@
 
   <!-- Gráfico -->
   <div class="mt-2">
-    <app-grafico-gastos />
+    <app-grafico-gastos [gastos]="gastosFiltrados" [categorias]="categorias"/>
   </div>
 
 </div>
 
-<!-- Modal: Nuevo Gasto -->
+<!-- Modal gasto (Crear / Editar) -->
 @if (modalAbierto) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" (click)="cerrarModal()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm overlay-animate" (click)="cerrarModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden modal-animate">
 
-      <!-- Cabecera -->
       <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
         <div>
-          <h3 class="text-base font-bold text-gray-900">Nuevo gasto</h3>
+          <h3 class="text-base font-bold text-gray-900">{{ tituloModal }}</h3>
           <p class="text-xs text-gray-400 mt-0.5">Completa los campos para registrar</p>
         </div>
         <button
-          class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
-          (click)="cerrarModal()">
-          ✕
-        </button>
+          class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 cursor-pointer"
+          (click)="cerrarModal()">✕</button>
       </div>
 
-      <!-- Campos -->
       <div class="px-6 py-5 space-y-4">
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Concepto</label>
-          <input
-            type="text"
-            placeholder="Ej: Supermercado"
-            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
+          <input type="text" placeholder="Ej: Supermercado"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/10 transition-all"
             [(ngModel)]="nuevoConcepto">
         </div>
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Monto</label>
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">S/</span>
-            <input
-              type="number"
-              placeholder="0.00"
-              class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
+            <input type="number" placeholder="0.00"
+              class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/10 transition-all"
               [(ngModel)]="nuevoMonto">
           </div>
         </div>
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Categoría</label>
           <div class="relative">
-            <button
-              type="button"
-              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-left flex items-center justify-between hover:border-emerald-400 transition-all"
+            <button type="button"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-left flex items-center justify-between hover:border-rose-400 transition-all cursor-pointer"
               (click)="dropdownModalAbierto = !dropdownModalAbierto">
               <span [class.text-gray-400]="!nuevaCategoria" [class.text-gray-700]="!!nuevaCategoria">
-                {{ nuevaCategoria || 'Seleccionar categoría' }}
+                {{ labelCategoriaModal }}
               </span>
               <span class="text-gray-400 text-xs">▾</span>
             </button>
             @if (dropdownModalAbierto) {
-              <div class="absolute z-10 w-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
-                @for (cat of categorias; track cat) {
-                  <button
-                    type="button"
-                    class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
-                    [class.text-emerald-600]="cat === nuevaCategoria"
-                    [class.font-medium]="cat === nuevaCategoria"
-                    [class.text-gray-700]="cat !== nuevaCategoria"
-                    (click)="seleccionarCategoria(cat)">
-                    {{ cat }}
+              <div class="absolute z-10 w-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate max-h-48 overflow-y-auto">
+                @for (cat of categorias; track cat.id) {
+                  <button type="button"
+                    class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center gap-2 cursor-pointer"
+                    [class.text-rose-600]="cat.id === nuevaCategoria"
+                    [class.font-medium]="cat.id === nuevaCategoria"
+                    [class.text-gray-700]="cat.id !== nuevaCategoria"
+                    (click)="seleccionarCategoria(cat.id!)">
+                    @if (cat.emoji) { <span>{{ cat.emoji }}</span> }
+                    {{ cat.nombre }}
                   </button>
                 }
               </div>
             }
           </div>
         </div>
+
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Fecha</label>
-          <input
-            type="date"
-            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all text-gray-600"
+          <input type="date"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/10 transition-all text-gray-600"
             [(ngModel)]="nuevaFecha">
         </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">
+            Notas <span class="text-gray-400">(opcional)</span>
+          </label>
+          <textarea placeholder="Agrega una nota..." rows="2"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/10 transition-all resize-none"
+            [(ngModel)]="nuevasNotas"></textarea>
+        </div>
+
       </div>
 
-      <!-- Acciones -->
       <div class="px-6 pb-6 flex gap-3">
         <button
-          class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
-          (click)="cerrarModal()">
-          Cancelar
-        </button>
+          class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+          (click)="cerrarModal()">Cancelar</button>
         <button
-          class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
-          (click)="cerrarModal()">
-          Guardar gasto
+          class="flex-1 bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer"
+          (click)="guardarGasto()">
+          {{ editandoId ? 'Guardar cambios' : 'Guardar gasto' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- Modal nota -->
+@if (modalNotaAbierto) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm overlay-animate" (click)="cerrarModalNota()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden modal-animate">
+
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <div>
+          <h3 class="text-base font-bold text-gray-900">Nota</h3>
+          <p class="text-xs text-gray-400 mt-0.5 truncate max-w-[200px]">{{ conceptoNota }}</p>
+        </div>
+        <button
+          class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 cursor-pointer"
+          (click)="cerrarModalNota()">✕</button>
+      </div>
+
+      <div class="px-6 py-5">
+        <p class="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{{ notaVista }}</p>
+      </div>
+
+      <div class="px-6 pb-6 pt-2 bg-white">
+        <button
+          class="w-full bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors shadow-sm shadow-rose-100 cursor-pointer"
+          (click)="cerrarModalNota()">
+          Entendido
         </button>
       </div>
 

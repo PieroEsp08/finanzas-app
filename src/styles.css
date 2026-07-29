@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   CONFIGURACIÓN GLOBAL
+   ========================================================================== */
+
 * {
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
@@ -9,4 +13,89 @@
 html,
 body {
   scrollbar-gutter: stable;
+}
+
+/* ==========================================================================
+   ANIMACIONES (KEYFRAMES)
+   ========================================================================== */
+
+/* 1. Desplegables (Categorías y Ordenar) */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 2. Modales (Ingreso / Nota) */
+@keyframes modalPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 3. Fondo del Modal (Backdrop) */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 4. Notificaciones Toast */
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 5. Barra de progreso para Toasts */
+@keyframes toastProgress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* ==========================================================================
+   CLASES DE ANIMACIÓN
+   ========================================================================== */
+
+.dropdown-animate {
+  animation: dropdownFadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+.modal-animate {
+  animation: modalPopIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.backdrop-animate,
+.overlay-animate {
+  animation: backdropFadeIn 180ms ease-out forwards;
+}
+
+.animate-toast-in {
+  animation: toastIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-toast-progress {
+  animation: toastProgress 5s linear forwards;
 }

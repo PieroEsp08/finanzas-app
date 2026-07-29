@@ -1,41 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
-interface Movimiento {
-  concepto: string;
-  categoria: string;
-  fecha: string;
-  monto: number;
-  tipo: 'ingreso' | 'gasto';
+import { TransaccionService } from '../../../../core/services/transaccion.service';
+import { CategoriaService } from '../../../../core/services/categoria.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { Transaccion } from '../../../../core/models/transaccion.model';
+import { Categoria } from '../../../../core/models/categoria.model';
+
+export interface TransaccionConCategoria extends Transaccion {
+  categoriaObj?: Categoria;
 }
 
 @Component({
   selector: 'app-finanzas-page',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './finanzas-page.html',
   styleUrl: './finanzas-page.css',
 })
-export class FinanzasPage {
+export class FinanzasPage implements OnInit {
 
+  // ── Servicios ─────────────────────────────────────────────────
+  private readonly transaccionService = inject(TransaccionService);
+  private readonly categoriaService = inject(CategoriaService);
+  private readonly authService = inject(AuthService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  // ── Estado ────────────────────────────────────────────────────
+  usuarioId: string | null = null;
+  cargando: boolean = false;
+  error: string | null = null;
+
+  // ── Datos ─────────────────────────────────────────────────────
+  transacciones: Transaccion[] = [];
+  categoriasList: Categoria[] = [];
+  categoriasMap: Map<string, Categoria> = new Map();
+
+  // ── Opciones de Filtro ─────────────────────────────────────────
   readonly registrosPorPagina = 10;
 
-  readonly categoriaColores: Record<string, string> = {
-    'Salario':          'bg-emerald-50 text-emerald-700 border-emerald-200',
-    'Freelance':        'bg-blue-50 text-blue-700 border-blue-200',
-    'Inversiones':      'bg-violet-50 text-violet-700 border-violet-200',
-    'Bonos':            'bg-amber-50 text-amber-700 border-amber-200',
-    'Alquiler':         'bg-cyan-50 text-cyan-700 border-cyan-200',
-    'Alimentación':     'bg-orange-50 text-orange-700 border-orange-200',
-    'Transporte':       'bg-cyan-50 text-cyan-700 border-cyan-200',
-    'Entretenimiento':  'bg-pink-50 text-pink-700 border-pink-200',
-    'Servicios':        'bg-amber-50 text-amber-700 border-amber-200',
-    'Salud':            'bg-red-50 text-red-700 border-red-200',
-    'Educación':        'bg-indigo-50 text-indigo-700 border-indigo-200',
-    'Otros':            'bg-gray-100 text-gray-600 border-gray-200',
-  };
-
   readonly meses = [
-    { valor: '',   label: 'Todos' },
+    { valor: '',   label: 'Todos los meses' },
     { valor: '01', label: 'Enero' },
     { valor: '02', label: 'Febrero' },
     { valor: '03', label: 'Marzo' },
@@ -50,46 +57,138 @@ export class FinanzasPage {
     { valor: '12', label: 'Diciembre' },
   ];
 
-  readonly movimientos: Movimiento[] = [
-    { concepto: 'Salario diciembre',       categoria: 'Salario',         fecha: '01/12/2024', monto: 18500, tipo: 'ingreso' },
-    { concepto: 'Renta departamento',      categoria: 'Servicios',       fecha: '01/12/2024', monto: 5200,  tipo: 'gasto'   },
-    { concepto: 'Proyecto web Nexora',     categoria: 'Freelance',       fecha: '03/12/2024', monto: 4200,  tipo: 'ingreso' },
-    { concepto: 'Supermercado semanal',    categoria: 'Alimentación',    fecha: '02/12/2024', monto: 680,   tipo: 'gasto'   },
-    { concepto: 'Gasolina',                categoria: 'Transporte',      fecha: '03/12/2024', monto: 1200,  tipo: 'gasto'   },
-    { concepto: 'Dividendos ETF SP500',    categoria: 'Inversiones',     fecha: '05/12/2024', monto: 350,   tipo: 'ingreso' },
-    { concepto: 'Netflix + Spotify',       categoria: 'Entretenimiento', fecha: '05/12/2024', monto: 260,   tipo: 'gasto'   },
-    { concepto: 'Restaurante aniversario', categoria: 'Alimentación',    fecha: '07/12/2024', monto: 890,   tipo: 'gasto'   },
-    { concepto: 'Internet fibra',          categoria: 'Servicios',       fecha: '08/12/2024', monto: 599,   tipo: 'gasto'   },
-    { concepto: 'Venta diseño logo',       categoria: 'Freelance',       fecha: '09/12/2024', monto: 800,   tipo: 'ingreso' },
-    { concepto: 'Uber viajes semana',      categoria: 'Transporte',      fecha: '10/12/2024', monto: 450,   tipo: 'gasto'   },
-    { concepto: 'Cine y palomitas',        categoria: 'Entretenimiento', fecha: '11/12/2024', monto: 320,   tipo: 'gasto'   },
-    { concepto: 'Bono fin de año',         categoria: 'Bonos',           fecha: '12/12/2024', monto: 1000,  tipo: 'ingreso' },
-    { concepto: 'Electricidad',            categoria: 'Servicios',       fecha: '13/12/2024', monto: 780,   tipo: 'gasto'   },
-    { concepto: 'Farmacia',                categoria: 'Salud',           fecha: '14/12/2024', monto: 342,   tipo: 'gasto'   },
-  ];
-
+  // ── Filtros Activos ───────────────────────────────────────────
   tipoFiltro: 'todos' | 'ingreso' | 'gasto' = 'todos';
   categoriaFiltro: string = 'todas';
   mesFiltro: string = '';
   anoFiltro: string = '';
+
+  // ── Dropdowns UI y Paginación ─────────────────────────────────
   dropdownFiltroAbierto: boolean = false;
   dropdownMesAbierto: boolean = false;
   dropdownAnoAbierto: boolean = false;
   paginaActual: number = 1;
 
+  // ── Lifecycle ─────────────────────────────────────────────────
+  async ngOnInit(): Promise<void> {
+    await this.obtenerUsuarioYCargarDatos();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('app-finanzas-page')) {
+      this.dropdownFiltroAbierto = false;
+      this.dropdownMesAbierto = false;
+      this.dropdownAnoAbierto = false;
+    }
+  }
+
+  // ── Carga de Datos ────────────────────────────────────────────
+  async obtenerUsuarioYCargarDatos(): Promise<void> {
+    this.cargando = true;
+    this.error = null;
+    this.cdr.detectChanges();
+
+    try {
+      const { data, error } = await this.authService.getCurrentUser();
+
+      if (error || !data.user) {
+        this.error = 'No hay una sesión activa de usuario.';
+        this.cargando = false;
+        this.cdr.detectChanges();
+        return;
+      }
+
+      this.usuarioId = data.user.id;
+      this.cargarDatosBackend(this.usuarioId);
+
+    } catch (err) {
+      console.error('Error al verificar sesión de Supabase:', err);
+      this.error = 'Ocurrió un error al verificar la sesión.';
+      this.cargando = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  private cargarDatosBackend(userId: string): void {
+    forkJoin({
+      transacciones: this.transaccionService.obtenerPorUsuario(userId),
+      categorias: this.categoriaService.obtenerPorUsuario(userId),
+    }).subscribe({
+      next: ({ transacciones, categorias }) => {
+        this.transacciones = transacciones;
+        this.categoriasList = categorias;
+        this.categoriasMap = new Map(categorias.map(c => [c.id!, c]));
+        this.cargando = false;
+        this.cdr.detectChanges(); // <- Forzamos el renderizado inmediato de la tabla
+      },
+      error: (err) => {
+        console.error('Error al cargar transacciones o categorías:', err);
+        this.error = 'No se pudieron obtener los datos del servidor.';
+        this.cargando = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  // ── Getters ───────────────────────────────────────────────────
+
   get anos(): string[] {
-    return [...new Set(this.movimientos.map(m =>
-      m.fecha.split('/')[2]
-    ))].sort((a, b) => parseInt(b) - parseInt(a));
+    if (!this.transacciones.length) return [];
+    return [...new Set(this.transacciones.map(t => this.extraerAno(t.fecha)))]
+      .filter(Boolean)
+      .sort((a, b) => parseInt(b) - parseInt(a));
   }
 
-  get categorias(): string[] {
-    return [...new Set(this.movimientos.map(m => m.categoria))].sort();
+  get categoriasFiltradasPorTipo(): (Categoria & { activa?: boolean; eliminada?: boolean })[] {
+  const mapaUnico = new Map<string, Categoria & { activa?: boolean; eliminada?: boolean }>();
+
+  // 1. Cargar las categorías activas (respetando el tipo de filtro activo)
+  const categoriasActivas = this.tipoFiltro === 'todos'
+    ? this.categoriasList
+    : this.categoriasList.filter(c => c.tipo === this.tipoFiltro);
+
+  categoriasActivas.forEach(c => {
+    if (c.id) {
+      mapaUnico.set(String(c.id), { 
+        ...c, 
+        activa: true, 
+        eliminada: false 
+      });
+    }
+  });
+
+  // 2. Rescatar categorías presentes en las transacciones (incluye eliminadas/inactivas)
+  for (const t of this.transacciones) {
+    if (this.tipoFiltro !== 'todos' && t.tipo !== this.tipoFiltro) {
+      continue;
+    }
+
+    const cat = this.getCategoria(t.categoriaId, t);
+    if (cat && cat.id && !mapaUnico.has(String(cat.id))) {
+      mapaUnico.set(String(cat.id), {
+        ...cat,
+        activa: false,     
+        eliminada: true    
+      });
+    }
   }
 
-  get labelFiltroActivo(): string {
-    return this.categoriaFiltro === 'todas' ? 'Todas las categorías' : this.categoriaFiltro;
-  }
+  return Array.from(mapaUnico.values());
+}
+
+get labelFiltroActivo(): string {
+  if (this.categoriaFiltro === 'todas') return 'Todas las categorías';
+
+  const transaccionRelacionada = this.transacciones.find(
+    t => String(t.categoriaId) === String(this.categoriaFiltro)
+  );
+  const cat = this.getCategoria(this.categoriaFiltro, transaccionRelacionada);
+
+  // Muestra únicamente el emoji y el nombre limpio de la categoría
+  return cat ? `${cat.emoji ? cat.emoji + ' ' : ''}${cat.nombre}` : 'Todas las categorías';
+}
 
   get labelMesActivo(): string {
     return this.meses.find(m => m.valor === this.mesFiltro)?.label ?? 'Todos los meses';
@@ -99,24 +198,30 @@ export class FinanzasPage {
     return this.anoFiltro === '' ? 'Todos los años' : this.anoFiltro;
   }
 
-  get movimientosFiltrados(): Movimiento[] {
-    return this.movimientos.filter(m => {
-      const partes = m.fecha.split('/');
-      const matchTipo = this.tipoFiltro === 'todos' || m.tipo === this.tipoFiltro;
-      const matchCategoria = this.categoriaFiltro === 'todas' || m.categoria === this.categoriaFiltro;
-      const matchMes = this.mesFiltro === '' || partes[1] === this.mesFiltro;
-      const matchAno = this.anoFiltro === '' || partes[2] === this.anoFiltro;
+  get transaccionesConCategoria(): TransaccionConCategoria[] {
+  return this.transacciones.map(t => ({
+    ...t,
+    categoriaObj: this.getCategoria(t.categoriaId, t),
+  }));
+}
+
+  get transaccionesFiltradas(): TransaccionConCategoria[] {
+    return this.transaccionesConCategoria.filter(t => {
+      const matchTipo = this.tipoFiltro === 'todos' || t.tipo === this.tipoFiltro;
+      const matchCategoria = this.categoriaFiltro === 'todas' || t.categoriaId === this.categoriaFiltro;
+      const matchMes = this.mesFiltro === '' || this.extraerMes(t.fecha) === this.mesFiltro;
+      const matchAno = this.anoFiltro === '' || this.extraerAno(t.fecha) === this.anoFiltro;
       return matchTipo && matchCategoria && matchMes && matchAno;
     });
   }
 
-  get movimientosPaginados(): Movimiento[] {
+  get movimientosPaginados(): TransaccionConCategoria[] {
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
-    return this.movimientosFiltrados.slice(inicio, inicio + this.registrosPorPagina);
+    return this.transaccionesFiltradas.slice(inicio, inicio + this.registrosPorPagina);
   }
 
   get totalPaginas(): number {
-    return Math.ceil(this.movimientosFiltrados.length / this.registrosPorPagina);
+    return Math.ceil(this.transaccionesFiltradas.length / this.registrosPorPagina) || 1;
   }
 
   get paginas(): number[] {
@@ -124,20 +229,78 @@ export class FinanzasPage {
   }
 
   get registrosMostrados(): number {
-    return Math.min(this.paginaActual * this.registrosPorPagina, this.movimientosFiltrados.length);
+    return Math.min(this.paginaActual * this.registrosPorPagina, this.transaccionesFiltradas.length);
   }
 
-  getColorCategoria(categoria: string): string {
-    return this.categoriaColores[categoria] ?? 'bg-gray-100 text-gray-600 border-gray-200';
+  // ── Helpers ───────────────────────────────────────────────────
+
+  getCategoria(categoriaId: string | number, transaccion?: any): Categoria | undefined {
+  if (!categoriaId && !transaccion) return undefined;
+
+  const idStr = String(categoriaId);
+
+  // 1. Busca en el Map de categorías activas (buscando coincidencia estricta o string)
+  if (this.categoriasMap.has(idStr)) {
+    return this.categoriasMap.get(idStr);
   }
+  
+  // Por si los keys del Map son de tipo Number
+  const catActiva = Array.from(this.categoriasMap.values()).find(c => String(c.id) === idStr);
+  if (catActiva) return catActiva;
+
+  // 2. Si fue eliminada de la lista activa pero el backend la mandó anidada en la transacción
+  if (transaccion?.categoria) {
+    return transaccion.categoria;
+  }
+
+  // 3. Fallback: Si el backend devolvió las propiedades mapeadas en la raíz del objeto
+  if (transaccion?.categoriaNombre || transaccion?.nombreCategoria) {
+    return {
+      id: idStr,
+      nombre: transaccion.categoriaNombre || transaccion.nombreCategoria,
+      color: transaccion.categoriaColor || transaccion.colorCategoria || '#6b7280',
+      emoji: transaccion.categoriaEmoji || transaccion.emojiCategoria || '🏷️'
+    } as Categoria;
+  }
+
+  return undefined;
+}
+
+  private extraerMes(fecha: string): string {
+    if (!fecha) return '';
+    if (fecha.includes('-')) return fecha.split('-')[1];
+    if (fecha.includes('/')) return fecha.split('/')[1];
+    return '';
+  }
+
+  private extraerAno(fecha: string): string {
+    if (!fecha) return '';
+    if (fecha.includes('-')) return fecha.split('-')[0];
+    if (fecha.includes('/')) return fecha.split('/')[2];
+    return '';
+  }
+
+  getStyleCategoria(cat?: Categoria): { [key: string]: string } {
+    if (!cat?.color) {
+      return { 'background-color': '#f3f4f6', 'color': '#374151', 'border-color': '#e5e7eb' };
+    }
+    return {
+      'background-color': `${cat.color}15`,
+      'color': cat.color,
+      'border-color': `${cat.color}40`
+    };
+  }
+
+  // ── Controles de UI ───────────────────────────────────────────
 
   setTipoFiltro(tipo: 'todos' | 'ingreso' | 'gasto'): void {
     this.tipoFiltro = tipo;
+    this.categoriaFiltro = 'todas';
     this.paginaActual = 1;
   }
 
-  seleccionarFiltro(valor: string): void {
-    this.categoriaFiltro = valor;
+  seleccionarFiltro(categoriaId: string): void {
+    this.categoriaFiltro = categoriaId;
     this.dropdownFiltroAbierto = false;
     this.paginaActual = 1;
   }
@@ -152,12 +315,6 @@ export class FinanzasPage {
     this.anoFiltro = valor;
     this.dropdownAnoAbierto = false;
     this.paginaActual = 1;
-  }
-
-  cerrarDropdowns(): void {
-    this.dropdownFiltroAbierto = false;
-    this.dropdownMesAbierto = false;
-    this.dropdownAnoAbierto = false;
   }
 
   cambiarPagina(pagina: number): void {

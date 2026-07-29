@@ -40,14 +40,14 @@
         </button>
       </div>
 
-      <!-- Dropdowns: año, mes, categoría en grid 3 cols en móvil -->
+      <!-- Dropdowns -->
       <div class="grid grid-cols-3 sm:flex items-center gap-2 w-full sm:w-auto">
 
         <!-- Dropdown año -->
         <div class="relative w-full">
           <button
             type="button"
-            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-2 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-1 hover:border-emerald-400 transition-all"
+            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-2 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-1 hover:border-emerald-400 transition-all cursor-pointer"
             (click)="dropdownAnoAbierto = !dropdownAnoAbierto; dropdownMesAbierto = false; dropdownFiltroAbierto = false">
             <span class="truncate pr-0.5">
               <span class="sm:hidden">{{ labelAnoActivo.includes('Todos') ? 'Año' : labelAnoActivo }}</span>
@@ -55,26 +55,35 @@
             </span>
             <span class="text-gray-400 text-[10px]">▾</span>
           </button>
+
           @if (dropdownAnoAbierto) {
             <div class="absolute right-0 sm:right-0 left-0 sm:left-auto z-10 w-full sm:w-44 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
+              
               <button
                 type="button"
-                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
                 [class.text-emerald-600]="anoFiltro === ''"
                 [class.font-medium]="anoFiltro === ''"
                 [class.text-gray-700]="anoFiltro !== ''"
                 (click)="seleccionarAno('')">
-                Todos
+                <span class="truncate">Todos</span>
+                @if (anoFiltro === '') {
+                  <span class="text-emerald-600 font-bold text-xs shrink-0 ml-2">✓</span>
+                }
               </button>
+
               @for (ano of anos; track ano) {
                 <button
                   type="button"
-                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
                   [class.text-emerald-600]="ano === anoFiltro"
                   [class.font-medium]="ano === anoFiltro"
                   [class.text-gray-700]="ano !== anoFiltro"
                   (click)="seleccionarAno(ano)">
-                  {{ ano }}
+                  <span class="truncate">{{ ano }}</span>
+                  @if (ano === anoFiltro) {
+                    <span class="text-emerald-600 font-bold text-xs shrink-0 ml-2">✓</span>
+                  }
                 </button>
               }
             </div>
@@ -85,7 +94,7 @@
         <div class="relative w-full">
           <button
             type="button"
-            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-2 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-1 hover:border-emerald-400 transition-all"
+            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-2 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-1 hover:border-emerald-400 transition-all cursor-pointer"
             (click)="dropdownMesAbierto = !dropdownMesAbierto; dropdownAnoAbierto = false; dropdownFiltroAbierto = false">
             <span class="truncate pr-0.5">
               <span class="sm:hidden">{{ labelMesActivo.includes('Todos') ? 'Mes' : labelMesActivo }}</span>
@@ -93,17 +102,21 @@
             </span>
             <span class="text-gray-400 text-[10px]">▾</span>
           </button>
+
           @if (dropdownMesAbierto) {
             <div class="absolute right-1/2 translate-x-1/2 sm:translate-x-0 sm:right-0 z-10 w-[180px] sm:w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate max-h-64 overflow-y-auto">
               @for (mes of meses; track mes.valor) {
                 <button
                   type="button"
-                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
                   [class.text-emerald-600]="mes.valor === mesFiltro"
                   [class.font-medium]="mes.valor === mesFiltro"
                   [class.text-gray-700]="mes.valor !== mesFiltro"
                   (click)="seleccionarMes(mes.valor)">
-                  {{ mes.label }}
+                  <span class="truncate">{{ mes.label }}</span>
+                  @if (mes.valor === mesFiltro) {
+                    <span class="text-emerald-600 font-bold text-xs shrink-0 ml-2">✓</span>
+                  }
                 </button>
               }
             </div>
@@ -111,37 +124,52 @@
         </div>
 
         <!-- Dropdown categoría -->
-        <div class="relative w-full">
-          <button
-            type="button"
-            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-2 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-1 hover:border-emerald-400 transition-all"
+        <div class="relative flex-1 sm:flex-none">
+          <button type="button"
+            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-emerald-400 transition-all cursor-pointer"
             (click)="dropdownFiltroAbierto = !dropdownFiltroAbierto; dropdownMesAbierto = false; dropdownAnoAbierto = false">
-            <span class="truncate pr-0.5">
-              <span class="sm:hidden">{{ labelFiltroActivo.includes('Todas') ? 'Categoría' : labelFiltroActivo }}</span>
-              <span class="hidden sm:inline">{{ labelFiltroActivo }}</span>
-            </span>
+            <span class="truncate">{{ labelFiltroActivo }}</span>
             <span class="text-gray-400 text-[10px]">▾</span>
           </button>
+
           @if (dropdownFiltroAbierto) {
-            <div class="absolute left-0 sm:left-auto sm:right-0 z-10 w-full sm:w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate max-h-64 overflow-y-auto">
-              <button
-                type="button"
-                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
+            <div class="absolute right-0 z-10 w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate max-h-64 overflow-y-auto">
+              
+              <!-- Opción: Todas las categorías -->
+              <button type="button"
+                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
                 [class.text-emerald-600]="categoriaFiltro === 'todas'"
                 [class.font-medium]="categoriaFiltro === 'todas'"
                 [class.text-gray-700]="categoriaFiltro !== 'todas'"
                 (click)="seleccionarFiltro('todas')">
-                Todas
+                <span class="truncate">Todas las categorías</span>
+
+                @if (categoriaFiltro === 'todas') {
+                  <span class="text-emerald-600 font-bold text-xs shrink-0 ml-2">✓</span>
+                }
               </button>
-              @for (cat of categorias; track cat) {
-                <button
-                  type="button"
-                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
-                  [class.text-emerald-600]="cat === categoriaFiltro"
-                  [class.font-medium]="cat === categoriaFiltro"
-                  [class.text-gray-700]="cat !== categoriaFiltro"
-                  (click)="seleccionarFiltro(cat)">
-                  {{ cat }}
+
+              <!-- Lista de categorías filtradas por tipo -->
+              @for (cat of categoriasFiltradasPorTipo; track cat.id) {
+                <button type="button"
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer gap-2"
+                  [class.text-emerald-600]="cat.id === categoriaFiltro && !cat.eliminada && (cat.activa ?? true)"
+                  [class.font-medium]="cat.id === categoriaFiltro"
+                  [class.text-gray-700]="cat.id !== categoriaFiltro && !cat.eliminada && (cat.activa ?? true)"
+                  [class.text-gray-400]="cat.eliminada || !(cat.activa ?? true)"
+                  (click)="seleccionarFiltro(cat.id!)">
+                  
+                  <div class="flex items-center gap-2 truncate">
+                    @if (cat.emoji) { 
+                      <span [class.opacity-50]="cat.eliminada || !(cat.activa ?? true)">{{ cat.emoji }}</span> 
+                    }
+                    <span class="truncate">{{ cat.nombre }}</span>
+                  </div>
+
+                  <!-- Check solo para la opción seleccionada actualmente -->
+                  @if (cat.id === categoriaFiltro) {
+                    <span class="text-emerald-600 font-bold text-xs shrink-0">✓</span>
+                  }
                 </button>
               }
             </div>
@@ -152,112 +180,135 @@
     </div>
   </div>
 
-  <!-- Tabla -->
-  <div class="hidden md:block overflow-auto">
-    <table class="w-full">
-      <thead class="sticky top-0 bg-white">
-        <tr class="border-b border-gray-100 text-left">
-          <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Concepto</th>
-          <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Tipo</th>
-          <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categoría</th>
-          <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Fecha</th>
-          <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Monto</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (mov of movimientosPaginados; track mov.concepto) {
-          <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-            <td class="py-3.5 text-sm font-medium text-gray-800">{{ mov.concepto }}</td>
-            <td class="py-3.5">
-              <span class="text-xs font-medium px-3 py-1 rounded-full border"
-                [class.bg-emerald-50]="mov.tipo === 'ingreso'"
-                [class.text-emerald-700]="mov.tipo === 'ingreso'"
-                [class.border-emerald-200]="mov.tipo === 'ingreso'"
-                [class.bg-red-50]="mov.tipo === 'gasto'"
-                [class.text-red-700]="mov.tipo === 'gasto'"
-                [class.border-red-200]="mov.tipo === 'gasto'">
-                {{ mov.tipo === 'ingreso' ? 'Ingreso' : 'Gasto' }}
-              </span>
-            </td>
-            <td class="py-3.5">
-              <span [class]="'text-xs font-medium border px-3 py-1 rounded-full ' + getColorCategoria(mov.categoria)">
-                {{ mov.categoria }}
-              </span>
-            </td>
-            <td class="py-3.5 text-sm text-gray-500">{{ mov.fecha }}</td>
-            <td class="py-3.5 text-sm font-bold text-right"
-              [class.text-emerald-600]="mov.tipo === 'ingreso'"
-              [class.text-red-500]="mov.tipo === 'gasto'">
-              {{ mov.tipo === 'ingreso' ? '+' : '-' }}S/ {{ mov.monto.toLocaleString('es-PE') }}
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Cards -->
-  <div class="block md:hidden space-y-3">
-    @for (mov of movimientosPaginados; track mov.concepto) {
-      <div class="p-4 border border-gray-50 bg-gray-50/30 rounded-xl flex items-center justify-between gap-3">
-        <div class="min-w-0">
-          <p class="text-sm font-medium text-gray-800 truncate">{{ mov.concepto }}</p>
-          <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-            <span [class]="'text-[10px] font-medium border px-2 py-0.5 rounded-full ' + getColorCategoria(mov.categoria)">
-              {{ mov.categoria }}
-            </span>
-            <span class="text-[11px] text-gray-400">{{ mov.fecha }}</span>
-          </div>
-        </div>
-        <div class="text-right flex-shrink-0">
-          <p class="text-sm font-bold"
-            [class.text-emerald-600]="mov.tipo === 'ingreso'"
-            [class.text-red-500]="mov.tipo === 'gasto'">
-            {{ mov.tipo === 'ingreso' ? '+' : '-' }}S/ {{ mov.monto.toLocaleString('es-PE') }}
-          </p>
-        </div>
-      </div>
-    }
-  </div>
-
-  <!-- Estado vacío -->
-  @if (movimientosPaginados.length === 0) {
-    <div class="py-16 text-center text-sm text-gray-400">
-      No hay movimientos para los filtros seleccionados
+  <!-- Contenedor Spinner de Carga -->
+  @if (cargando) {
+    <div class="py-12 flex flex-col items-center justify-center gap-2 text-gray-400">
+      <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <span class="text-xs">Cargando transacciones...</span>
     </div>
   }
 
-  <!-- Paginación -->
-  @if (totalPaginas > 1) {
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-5 pt-4 border-t border-gray-50">
-      <p class="text-xs text-gray-400 text-center sm:text-left order-2 sm:order-1">
-        Mostrando {{ (paginaActual - 1) * registrosPorPagina + 1 }}–{{ registrosMostrados }} de {{ movimientosFiltrados.length }} registros
-      </p>
-      <div class="flex items-center gap-1 order-1 sm:order-2">
-        <button
-          class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
-          [disabled]="paginaActual === 1"
-          (click)="cambiarPagina(paginaActual - 1)">
-          ‹
-        </button>
-        @for (pagina of paginas; track pagina) {
-          <button
-            class="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
-            [class.bg-emerald-500]="pagina === paginaActual"
-            [class.text-white]="pagina === paginaActual"
-            [class.text-gray-500]="pagina !== paginaActual"
-            (click)="cambiarPagina(pagina)">
-            {{ pagina }}
-          </button>
-        }
-        <button
-          class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
-          [disabled]="paginaActual === totalPaginas"
-          (click)="cambiarPagina(paginaActual + 1)">
-          ›
-        </button>
-      </div>
+  <!-- Error de Servidor -->
+  @if (error && !cargando) {
+    <div class="p-4 bg-red-50 text-red-600 text-xs rounded-xl text-center mb-4">
+      {{ error }}
     </div>
+  }
+
+  <!-- Tabla (Desktop) -->
+  @if (!cargando && !error) {
+    <div class="hidden md:block overflow-auto">
+      <table class="w-full">
+        <thead class="sticky top-0 bg-white">
+          <tr class="border-b border-gray-100 text-left">
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Concepto</th>
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Tipo</th>
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categoría</th>
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Fecha</th>
+            <th class="pb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (mov of movimientosPaginados; track mov.id ?? mov.concepto) {
+            <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+              <td class="py-3.5 text-sm font-medium text-gray-800">{{ mov.concepto }}</td>
+              <td class="py-3.5">
+                <span class="text-xs font-medium px-3 py-1 rounded-full border"
+                  [class.bg-emerald-50]="mov.tipo === 'ingreso'"
+                  [class.text-emerald-700]="mov.tipo === 'ingreso'"
+                  [class.border-emerald-200]="mov.tipo === 'ingreso'"
+                  [class.bg-red-50]="mov.tipo === 'gasto'"
+                  [class.text-red-700]="mov.tipo === 'gasto'"
+                  [class.border-red-200]="mov.tipo === 'gasto'">
+                  {{ mov.tipo === 'ingreso' ? 'Ingreso' : 'Gasto' }}
+                </span>
+              </td>
+              <td class="py-3.5">
+                <span 
+                  class="text-xs font-medium border px-3 py-1 rounded-full inline-flex items-center gap-1"
+                  [ngStyle]="getStyleCategoria(mov.categoriaObj)">
+                  <span>{{ mov.categoriaObj?.emoji }}</span>
+                  <span>{{ mov.categoriaObj?.nombre ?? 'Sin categoría' }}</span>
+                </span>
+              </td>
+              <td class="py-3.5 text-sm text-gray-500">{{ mov.fecha }}</td>
+              <td class="py-3.5 text-sm font-bold text-right"
+                [class.text-emerald-600]="mov.tipo === 'ingreso'"
+                [class.text-red-500]="mov.tipo === 'gasto'">
+                {{ mov.tipo === 'ingreso' ? '+' : '-' }}S/ {{ mov.monto.toLocaleString('es-PE', { minimumFractionDigits: 2 }) }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cards (Mobile) -->
+    <div class="block md:hidden space-y-3">
+      @for (mov of movimientosPaginados; track mov.id ?? mov.concepto) {
+        <div class="p-4 border border-gray-50 bg-gray-50/30 rounded-xl flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate">{{ mov.concepto }}</p>
+            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+              <span 
+                class="text-[10px] font-medium border px-2 py-0.5 rounded-full inline-flex items-center gap-1"
+                [ngStyle]="getStyleCategoria(mov.categoriaObj)">
+                <span>{{ mov.categoriaObj?.emoji }}</span>
+                <span>{{ mov.categoriaObj?.nombre ?? 'Sin categoría' }}</span>
+              </span>
+              <span class="text-[11px] text-gray-400">{{ mov.fecha }}</span>
+            </div>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="text-sm font-bold"
+              [class.text-emerald-600]="mov.tipo === 'ingreso'"
+              [class.text-red-500]="mov.tipo === 'gasto'">
+              {{ mov.tipo === 'ingreso' ? '+' : '-' }}S/ {{ mov.monto.toLocaleString('es-PE', { minimumFractionDigits: 2 }) }}
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Estado vacío -->
+    @if (movimientosPaginados.length === 0) {
+      <div class="py-16 text-center text-sm text-gray-400">
+        No hay movimientos para los filtros seleccionados
+      </div>
+    }
+
+    <!-- Paginación -->
+    @if (totalPaginas > 1) {
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-5 pt-4 border-t border-gray-50">
+        <p class="text-xs text-gray-400 text-center sm:text-left order-2 sm:order-1">
+          Mostrando {{ (paginaActual - 1) * registrosPorPagina + 1 }}–{{ registrosMostrados }} de {{ transaccionesFiltradas.length }} registros
+        </p>
+        <div class="flex items-center gap-1 order-1 sm:order-2">
+          <button
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
+            [disabled]="paginaActual === 1"
+            (click)="cambiarPagina(paginaActual - 1)">
+            ‹
+          </button>
+          @for (pagina of paginas; track pagina) {
+            <button
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-colors"
+              [class.bg-emerald-500]="pagina === paginaActual"
+              [class.text-white]="pagina === paginaActual"
+              [class.text-gray-500]="pagina !== paginaActual"
+              (click)="cambiarPagina(pagina)">
+              {{ pagina }}
+            </button>
+          }
+          <button
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-gray-500 hover:bg-gray-100 transition-colors disabled:opacity-30"
+            [disabled]="paginaActual === totalPaginas"
+            (click)="cambiarPagina(paginaActual + 1)">
+            ›
+          </button>
+        </div>
+      </div>
+    }
   }
 
 </div>

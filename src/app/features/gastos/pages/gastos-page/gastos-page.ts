@@ -1,140 +1,267 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LucideAngularModule, TrendingDown, Hash, BarChart2, LucideIconData, Pencil, Trash2, FileText, Plus } from 'lucide-angular';
 import { CardMetrica } from '../../../../shared/components/card-metrica/card-metrica';
 import { GraficoGastos } from '../../components/grafico-gastos/grafico-gastos';
-import { TrendingDown, Hash, BarChart2, LucideIconData } from 'lucide-angular';
-
-interface Gasto {
-  concepto: string;
-  categoria: string;
-  fecha: string;
-  monto: number;
-}
+import { TransaccionService } from '../../../../core/services/transaccion.service';
+import { CategoriaService } from '../../../../core/services/categoria.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { Transaccion } from '../../../../core/models/transaccion.model';
+import { Categoria } from '../../../../core/models/categoria.model';
 
 @Component({
   selector: 'app-gastos-page',
-  imports: [FormsModule, CardMetrica, GraficoGastos],
+  standalone: true,
+  imports: [CommonModule, FormsModule, LucideAngularModule, CardMetrica, GraficoGastos],
   templateUrl: './gastos-page.html',
   styleUrl: './gastos-page.css',
 })
-export class GastosPage {
+export class GastosPage implements OnInit {
 
+  // ── Servicios ─────────────────────────────────────────────────
+  private transaccionService = inject(TransaccionService);
+  private categoriaService = inject(CategoriaService);
+  private authService = inject(AuthService);
+  private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
+
+  // ── Iconos ────────────────────────────────────────────────────
   readonly trendingDownIcon: LucideIconData = TrendingDown;
   readonly hashIcon: LucideIconData = Hash;
   readonly barChartIcon: LucideIconData = BarChart2;
+  icons = { edit: Pencil, trash: Trash2, nota: FileText, plus: Plus };
 
-  readonly categorias = [
-    'Alimentación', 'Transporte', 'Entretenimiento', 'Servicios', 'Salud', 'Educación', 'Otros',
+  // ── Estado ────────────────────────────────────────────────────
+  cargando = true;
+  usuarioId = '';
+  Math = Math;
+
+  // ── Datos ─────────────────────────────────────────────────────
+  gastos: Transaccion[] = [];
+  categorias: Categoria[] = [];
+
+  // ── Filtros ───────────────────────────────────────────────────
+  categoriaFiltro = 'todas';
+  dropdownFiltroAbierto = false;
+  dropdownOrdenarAbierto = false;
+  ordenActual = 'fecha-desc';
+
+  readonly opcionesOrden = [
+    { valor: 'fecha-desc', label: 'Más reciente' },
+    { valor: 'fecha-asc',  label: 'Más antiguo' },
+    { valor: 'monto-desc', label: 'Mayor monto' },
+    { valor: 'monto-asc',  label: 'Menor monto' },
   ];
 
-  readonly categoriaColores: Record<string, string> = {
-    'Alimentación':     'bg-orange-50 text-orange-700 border-orange-200',
-    'Transporte':       'bg-cyan-50 text-cyan-700 border-cyan-200',
-    'Entretenimiento':  'bg-pink-50 text-pink-700 border-pink-200',
-    'Servicios':        'bg-amber-50 text-amber-700 border-amber-200',
-    'Salud':            'bg-red-50 text-red-700 border-red-200',
-    'Educación':        'bg-indigo-50 text-indigo-700 border-indigo-200',
-    'Otros':            'bg-violet-50 text-violet-700 border-violet-200',
-  };
+  // ── Paginación ────────────────────────────────────────────────
+  paginaActual = 1;
+  readonly registrosPorPagina = 5;
 
-  readonly gastos: Gasto[] = [
-    { concepto: 'Renta departamento',      categoria: 'Servicios',       fecha: '01/12/2024', monto: 5200 },
-    { concepto: 'Supermercado semanal',    categoria: 'Alimentación',    fecha: '02/12/2024', monto: 680  },
-    { concepto: 'Gasolina',                categoria: 'Transporte',      fecha: '03/12/2024', monto: 1200 },
-    { concepto: 'Netflix + Spotify',       categoria: 'Entretenimiento', fecha: '05/12/2024', monto: 260  },
-    { concepto: 'Restaurante aniversario', categoria: 'Alimentación',    fecha: '07/12/2024', monto: 890  },
-    { concepto: 'Internet fibra',          categoria: 'Servicios',       fecha: '08/12/2024', monto: 599  },
-    { concepto: 'Uber viajes semana',      categoria: 'Transporte',      fecha: '10/12/2024', monto: 450  },
-    { concepto: 'Cine y palomitas',        categoria: 'Entretenimiento', fecha: '11/12/2024', monto: 320  },
-    { concepto: 'Electricidad',            categoria: 'Servicios',       fecha: '13/12/2024', monto: 780  },
-    { concepto: 'Farmacia',                categoria: 'Salud',           fecha: '14/12/2024', monto: 342  },
-    { concepto: 'Curso Angular',           categoria: 'Educación',       fecha: '15/12/2024', monto: 300  },
-    { concepto: 'Supermercado semanal 2',  categoria: 'Alimentación',    fecha: '16/12/2024', monto: 750  },
-  ];
-
-  categoriaFiltro: string = 'todas';
-  modalAbierto: boolean = false;
-  dropdownFiltroAbierto: boolean = false;
-  dropdownModalAbierto: boolean = false;
-  paginaActual: number = 1;
-  readonly registrosPorPagina: number = 5;
-
-  nuevoConcepto: string = '';
+  // ── Modal gasto ───────────────────────────────────────────────
+  modalAbierto = false;
+  dropdownModalAbierto = false;
+  editandoId: string | null = null;
+  nuevoConcepto = '';
   nuevoMonto: number | null = null;
-  nuevaCategoria: string = '';
-  nuevaFecha: string = '';
+  nuevaCategoria = '';
+  nuevaFecha = '';
+  nuevasNotas = '';
+
+  // ── Modal nota ────────────────────────────────────────────────
+  modalNotaAbierto = false;
+  notaVista = '';
+  conceptoNota = '';
+
+  // ── Lifecycle ─────────────────────────────────────────────────
+  async ngOnInit(): Promise<void> {
+    const { data } = await this.authService.getSession();
+    if (data.session) {
+      this.usuarioId = data.session.user.id;
+      this.cargarDatos();
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('app-gastos-page')) {
+      this.dropdownFiltroAbierto = false;
+      this.dropdownOrdenarAbierto = false;
+      this.dropdownModalAbierto = false;
+    }
+  }
+
+  cargarDatos(): void {
+    this.cargando = true;
+
+    this.categoriaService.obtenerPorUsuarioYTipo(this.usuarioId, 'gasto').subscribe({
+      next: (cats) => { 
+        this.categorias = cats; 
+        this.cdr.detectChanges(); 
+      },
+      error: (err) => console.error('Error cargando categorías:', err)
+    });
+
+    this.transaccionService.obtenerPorTipo(this.usuarioId, 'gasto').subscribe({
+      next: (data) => { 
+        this.gastos = data; 
+        this.cargando = false; 
+        this.cdr.detectChanges(); 
+      },
+      error: (err) => {
+        console.error('Error cargando gastos:', err);
+        this.cargando = false;
+        this.toastService.error('Error', 'No se pudieron cargar los gastos');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // ── Getters ───────────────────────────────────────────────────
+  get tituloModal(): string { return this.editandoId ? 'Editar gasto' : 'Nuevo gasto'; }
+
+  /**
+ * Genera dinámicamente la lista de categorías para el dropdown de FILTRADO.
+ * Incluye tanto las activas como aquellas eliminadas que aún están registradas en los gastos.
+ */
+get categoriasParaFiltro(): (Categoria & { activa?: boolean })[] {
+  const mapaUnico = new Map<string, Categoria & { activa?: boolean }>();
+
+  // 1. Cargar categorías activas
+  this.categorias.forEach(c => {
+    if (c.id) {
+      mapaUnico.set(String(c.id), { ...c, activa: true });
+    }
+  });
+
+  // 2. Extraer y rescatar categorías presentes en los gastos (incluye inactivas/eliminadas)
+  for (const gasto of this.gastos) {
+    const cat = this.getCategoria(gasto.categoriaId, gasto);
+    if (cat && cat.id && !mapaUnico.has(String(cat.id))) {
+      mapaUnico.set(String(cat.id), {
+        ...cat,
+        activa: false // <--- Conserva su nombre y marca la bandera
+      });
+    }
+  }
+
+  return Array.from(mapaUnico.values());
+}
 
   get labelFiltroActivo(): string {
-    return this.categoriaFiltro === 'todas' ? 'Todas las categorías' : this.categoriaFiltro;
+    if (this.categoriaFiltro === 'todas') return 'Todas las categorías';
+    return this.categorias.find(c => c.id === this.categoriaFiltro)?.nombre ?? 'Categoría';
   }
 
-  get gastosFiltrados(): Gasto[] {
-    if (this.categoriaFiltro === 'todas') return this.gastos;
-    return this.gastos.filter(g => g.categoria === this.categoriaFiltro);
+  get labelOrdenActivo(): string {
+    return this.opcionesOrden.find(o => o.valor === this.ordenActual)?.label ?? 'Ordenar';
   }
 
-  get gastosPaginados(): Gasto[] {
+  get labelCategoriaModal(): string {
+    if (!this.nuevaCategoria) return 'Seleccionar categoría';
+    return this.categorias.find(c => c.id === this.nuevaCategoria)?.nombre ?? 'Categoría';
+  }
+
+  get gastosFiltrados(): Transaccion[] {
+    let resultado = [...this.gastos];
+    if (this.categoriaFiltro !== 'todas') {
+      resultado = resultado.filter(t => t.categoriaId === this.categoriaFiltro);
+    }
+    switch (this.ordenActual) {
+      case 'fecha-desc': resultado.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()); break;
+      case 'fecha-asc':  resultado.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()); break;
+      case 'monto-desc': resultado.sort((a, b) => b.monto - a.monto); break;
+      case 'monto-asc':  resultado.sort((a, b) => a.monto - b.monto); break;
+    }
+    return resultado;
+  }
+
+  get gastosPaginados(): Transaccion[] {
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return this.gastosFiltrados.slice(inicio, inicio + this.registrosPorPagina);
   }
 
-  get totalPaginas(): number {
-    return Math.ceil(this.gastosFiltrados.length / this.registrosPorPagina);
+  get totalPaginas(): number { return Math.ceil(this.gastosFiltrados.length / this.registrosPorPagina); }
+  get paginas(): number[] { return Array.from({ length: this.totalPaginas }, (_, i) => i + 1); }
+  get registrosMostrados(): number { return Math.min(this.paginaActual * this.registrosPorPagina, this.gastosFiltrados.length); }
+  get filasVacias(): number[] { return Array.from({ length: Math.max(this.registrosPorPagina - this.gastosPaginados.length, 0) }, (_, i) => i); }
+  get totalGastos(): number { return this.gastos.reduce((acc, t) => acc + t.monto, 0); }
+  get totalTransacciones(): number { return this.gastos.length; }
+  get promedioPorGasto(): number { return this.gastos.length === 0 ? 0 : Math.round(this.totalGastos / this.totalTransacciones); }
+
+  // ── Helpers ───────────────────────────────────────────────────
+getCategoria(categoriaId: string | number, gasto?: any): Categoria | undefined {
+  if (!categoriaId) return undefined;
+
+  // 1. Busca en las categorías activas (comparando como String por compatibilidad de tipos/UUIDs)
+  const catActiva = this.categorias.find(c => String(c.id) === String(categoriaId));
+  if (catActiva) return catActiva;
+
+  // 2. Si fue eliminada de la lista activa pero el backend la mandó anidada en la transacción
+  if (gasto?.categoria) {
+    return gasto.categoria;
   }
 
-  get paginas(): number[] {
-    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+  // 3. Fallback: Si el backend devolvió las propiedades mapeadas en la raíz del objeto
+  if (gasto?.categoriaNombre || gasto?.nombreCategoria) {
+    return {
+      id: String(categoriaId),
+      nombre: gasto.categoriaNombre || gasto.nombreCategoria,
+      color: gasto.categoriaColor || gasto.colorCategoria || '#ef4444',
+      emoji: gasto.categoriaEmoji || gasto.emojiCategoria || '🏷️'
+    } as Categoria;
   }
 
-  get registrosMostrados(): number {
-    return Math.min(this.paginaActual * this.registrosPorPagina, this.gastosFiltrados.length);
-  }
+  return undefined;
+}
 
-  get filasVacias(): number[] {
-    const filas = this.registrosPorPagina - this.gastosPaginados.length;
-    return Array.from({ length: filas }, (_, i) => i);
-  }
-
-  get totalGastos(): number {
-    return this.gastos.reduce((acc, g) => acc + g.monto, 0);
-  }
-
-  get totalTransacciones(): number {
-    return this.gastos.length;
-  }
-
-  get promedioPorGasto(): number {
-    if (this.gastos.length === 0) return 0;
-    return Math.round(this.totalGastos / this.totalTransacciones);
-  }
-
-  getColorCategoria(categoria: string): string {
-    return this.categoriaColores[categoria] ?? 'bg-gray-100 text-gray-600 border-gray-200';
-  }
-
-  cambiarPagina(pagina: number): void {
-    if (pagina < 1 || pagina > this.totalPaginas) return;
-    this.paginaActual = pagina;
-  }
-
-  seleccionarFiltro(valor: string): void {
+  // ── Acciones ──────────────────────────────────────────────────
+  seleccionarFiltro(valor: string | undefined): void {
+    if (!valor) return;
     this.categoriaFiltro = valor;
     this.dropdownFiltroAbierto = false;
     this.paginaActual = 1;
   }
 
-  seleccionarCategoria(cat: string): void {
-    this.nuevaCategoria = cat;
+  seleccionarOrden(valor: string): void {
+    this.ordenActual = valor;
+    this.dropdownOrdenarAbierto = false;
+  }
+
+  seleccionarCategoria(id: string | undefined): void {
+    if (!id) return;
+    this.nuevaCategoria = id;
     this.dropdownModalAbierto = false;
   }
 
+  cambiarPagina(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.totalPaginas) this.paginaActual = pagina;
+  }
+
   abrirModal(): void {
-    this.modalAbierto = true;
+    this.editandoId = null;
+    this.resetFormulario();
+    this.nuevaFecha = new Date().toISOString().split('T')[0];
     this.dropdownFiltroAbierto = false;
+    this.dropdownOrdenarAbierto = false;
+    this.modalAbierto = true;
+  }
+
+  abrirModalEditar(gasto: Transaccion): void {
+    this.editandoId = gasto.id!;
+    this.nuevoConcepto = gasto.concepto;
+    this.nuevoMonto = Number(gasto.monto);
+    this.nuevaCategoria = gasto.categoriaId;
+    this.nuevaFecha = gasto.fecha;
+    this.nuevasNotas = gasto.notas ?? '';
+    this.modalAbierto = true;
   }
 
   cerrarModal(): void {
     this.modalAbierto = false;
+    this.editandoId = null;
     this.dropdownModalAbierto = false;
     this.resetFormulario();
   }
@@ -144,5 +271,100 @@ export class GastosPage {
     this.nuevoMonto = null;
     this.nuevaCategoria = '';
     this.nuevaFecha = '';
+    this.nuevasNotas = '';
+  }
+
+  guardarGasto(): void {
+    if (!this.nuevoConcepto || !this.nuevoMonto || !this.nuevaFecha || !this.nuevaCategoria) {
+      this.toastService.error('Campos incompletos', 'Por favor llena todos los campos obligatorios');
+      return;
+    }
+
+    const gasto: Transaccion = {
+      usuarioId: this.usuarioId,
+      categoriaId: this.nuevaCategoria,
+      tipo: 'gasto',
+      concepto: this.nuevoConcepto,
+      monto: this.nuevoMonto,
+      fecha: this.nuevaFecha,
+      notas: this.nuevasNotas
+    };
+
+    if (this.editandoId) {
+      this.transaccionService.actualizar(this.editandoId, gasto).subscribe({
+        next: () => {
+          this.cerrarModal();
+          this.cargarDatos();
+          this.toastService.success('Gasto actualizado', `Se guardaron los cambios para "${gasto.concepto}"`);
+        },
+        error: (err) => {
+          console.error('Error actualizando gasto:', err);
+          this.toastService.error('Error al actualizar', 'No se pudieron guardar los cambios');
+        }
+      });
+    } else {
+      this.transaccionService.crear(gasto).subscribe({
+        next: () => {
+          this.cerrarModal();
+          this.cargarDatos();
+          this.toastService.success('Gasto registrado', `Se registró el gasto de S/ ${gasto.monto.toLocaleString('es-PE')} correctamente`);
+        },
+        error: (err) => {
+          console.error('Error creando gasto:', err);
+          this.toastService.error('Error al guardar', 'No se pudo registrar el gasto');
+        }
+      });
+    }
+  }
+
+  abrirModalEliminar(gasto: Transaccion): void {
+    if (!gasto.id) return;
+
+    const idEliminar = gasto.id;
+    let cancelado = false;
+
+    // 1. Quitarlo visualmente de la lista local
+    const respaldoGastos = [...this.gastos];
+    this.gastos = this.gastos.filter(t => t.id !== idEliminar);
+    this.cdr.detectChanges();
+
+    // 2. Disparar el Snackbar reversible
+    this.toastService.showUndo(
+      'Gasto eliminado',
+      `"${gasto.concepto}" se eliminó del historial.`,
+      () => {
+        cancelado = true;
+        this.gastos = respaldoGastos;
+        this.cdr.detectChanges();
+        this.toastService.success('Acción cancelada', 'El gasto fue restaurado');
+      },
+      6000
+    );
+
+    // 3. Confirmar eliminación en la API
+    setTimeout(() => {
+      if (!cancelado) {
+        this.transaccionService.eliminar(idEliminar).subscribe({
+          error: (err) => {
+            console.error('Error eliminando gasto:', err);
+            this.gastos = respaldoGastos;
+            this.toastService.error('Error', 'No se pudo eliminar el registro en el servidor');
+            this.cdr.detectChanges();
+          }
+        });
+      }
+    }, 6000);
+  }
+
+  verNota(gasto: Transaccion): void {
+    this.notaVista = gasto.notas ?? '';
+    this.conceptoNota = gasto.concepto;
+    this.modalNotaAbierto = true;
+  }
+
+  cerrarModalNota(): void {
+    this.modalNotaAbierto = false;
+    this.notaVista = '';
+    this.conceptoNota = '';
   }
 }

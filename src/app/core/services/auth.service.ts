@@ -67,4 +67,10 @@ export class AuthService {
     return await this.supabase.auth.getSession();
   }
 
+  onAuthStateChange(callback: (session: any) => void): void {
+  this.supabase.auth.onAuthStateChange((event, session) => {
+    callback(session);
+  });
+}
+
 }
