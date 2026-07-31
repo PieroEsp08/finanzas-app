@@ -17,86 +17,72 @@
   <div class="bg-white border border-gray-100 rounded-2xl p-4 md:p-6 md:h-[515px] flex flex-col justify-between">
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 shrink-0">
-      <div>
-        <h2 class="text-base font-semibold text-gray-800">Mis ingresos</h2>
-        <p class="text-xs text-gray-400 mt-0.5">Historial de ingresos registrados</p>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 shrink-0">
+      
+      <!-- Título y Subtítulo -->
+      <div class="flex items-center justify-between md:justify-start gap-4">
+        <div>
+          <h2 class="text-base font-semibold text-gray-800">Mis ingresos</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Historial de ingresos registrados</p>
+        </div>
+
+        <!-- Botón Agregar (Solo visible aquí en Móvil) -->
+        <button
+          class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition-colors duration-150 shrink-0 cursor-pointer flex md:hidden items-center gap-1.5 shadow-sm shadow-emerald-500/10"
+          (click)="abrirModal()">
+          <lucide-icon [img]="icons.plus" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
+          <span>Agregar</span>
+        </button>
       </div>
-      <div class="flex items-center gap-3">
+
+      <!-- Filtros y Botón Agregar (En escritorio van juntos) -->
+      <div class="flex items-center gap-2.5 sm:gap-3 w-full md:w-auto">
 
         <!-- Dropdown categoría -->
-<div class="relative flex-1 sm:flex-none">
-  <button type="button"
-    class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-emerald-400 transition-all cursor-pointer"
-    (click)="dropdownFiltroAbierto = !dropdownFiltroAbierto">
-    <span class="truncate">{{ labelFiltroActivo }}</span>
-    <span class="text-gray-400 text-[10px]">▾</span>
-  </button>
-
-  @if (dropdownFiltroAbierto) {
-    <div class="absolute right-0 z-10 w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate max-h-64 overflow-y-auto">
-      
-      <!-- Opción: Todas las categorías -->
-      <button type="button"
-        class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
-        [class.text-emerald-600]="categoriaFiltro === 'todas'"
-        [class.font-medium]="categoriaFiltro === 'todas'"
-        [class.text-gray-700]="categoriaFiltro !== 'todas'"
-        (click)="seleccionarFiltro('todas')">
-        <span class="truncate">Todas las categorías</span>
-        
-        @if (categoriaFiltro === 'todas') {
-          <span class="text-emerald-600 font-bold text-xs shrink-0 ml-2">✓</span>
-        }
-      </button>
-
-      <!-- Lista de categorías -->
-      @for (cat of categoriasParaFiltro; track cat.id) {
-        <button type="button"
-          class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer gap-2"
-          [class.text-emerald-600]="cat.id === categoriaFiltro && cat.activa !== false"
-          [class.font-medium]="cat.id === categoriaFiltro"
-          [class.text-gray-700]="cat.id !== categoriaFiltro && cat.activa !== false"
-          [class.text-gray-400]="cat.activa === false"
-          (click)="seleccionarFiltro(cat.id!)">
-          
-          <div class="flex items-center gap-2 truncate">
-            @if (cat.emoji) { 
-              <span [class.opacity-50]="cat.activa === false">{{ cat.emoji }}</span> 
-            }
-            <span class="truncate">{{ cat.nombre }}</span>
-          </div>
-
-          <!-- Check solo para el elemento seleccionado -->
-          @if (cat.id === categoriaFiltro) {
-            <span class="text-emerald-600 font-bold text-xs shrink-0">✓</span>
-          }
-        </button>
-      }
-    </div>
-  }
-</div>
-
-        <!-- Dropdown ordenar -->
-        <div class="relative">
+        <div class="relative flex-1 md:w-48">
           <button type="button"
-            class="text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center gap-2 hover:border-emerald-400 transition-all cursor-pointer"
-            (click)="dropdownOrdenarAbierto = !dropdownOrdenarAbierto">
-            <span>{{ labelOrdenActivo }}</span>
-            <span class="text-gray-400 text-[10px]">▾</span>
+            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-emerald-400 transition-all cursor-pointer"
+            (click)="dropdownFiltroAbierto = !dropdownFiltroAbierto">
+            <span class="truncate text-left">{{ labelFiltroActivo }}</span>
+            <span class="text-gray-400 text-[10px] shrink-0">▾</span>
           </button>
-          @if (dropdownOrdenarAbierto) {
-            <div class="absolute right-0 z-10 w-44 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
-              @for (opcion of opcionesOrden; track opcion.valor) {
+
+          @if (dropdownFiltroAbierto) {
+            <div class="absolute left-0 sm:right-0 sm:left-auto z-20 w-full sm:w-52 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate max-h-64 overflow-y-auto">
+              
+              <!-- Opción: Todas las categorías -->
+              <button type="button"
+                class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
+                [class.text-emerald-600]="categoriaFiltro === 'todas'"
+                [class.font-medium]="categoriaFiltro === 'todas'"
+                [class.text-gray-700]="categoriaFiltro !== 'todas'"
+                (click)="seleccionarFiltro('todas')">
+                <span class="truncate">Todas las categorías</span>
+                
+                @if (categoriaFiltro === 'todas') {
+                  <span class="text-emerald-600 font-bold text-xs shrink-0 ml-2">✓</span>
+                }
+              </button>
+
+              <!-- Lista de categorías -->
+              @for (cat of categoriasParaFiltro; track cat.id) {
                 <button type="button"
-                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
-                  [class.text-emerald-600]="ordenActual === opcion.valor"
-                  [class.font-medium]="ordenActual === opcion.valor"
-                  [class.text-gray-700]="ordenActual !== opcion.valor"
-                  (click)="seleccionarOrden(opcion.valor)">
-                  {{ opcion.label }}
-                  @if (ordenActual === opcion.valor) {
-                    <span class="text-emerald-500 text-xs">✓</span>
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer gap-2"
+                  [class.text-emerald-600]="cat.id === categoriaFiltro && cat.activa !== false"
+                  [class.font-medium]="cat.id === categoriaFiltro"
+                  [class.text-gray-700]="cat.id !== categoriaFiltro && cat.activa !== false"
+                  [class.text-gray-400]="cat.activa === false"
+                  (click)="seleccionarFiltro(cat.id!)">
+                  
+                  <div class="flex items-center gap-2 truncate">
+                    @if (cat.emoji) { 
+                      <span [class.opacity-50]="cat.activa === false">{{ cat.emoji }}</span> 
+                    }
+                    <span class="truncate">{{ cat.nombre }}</span>
+                  </div>
+
+                  @if (cat.id === categoriaFiltro) {
+                    <span class="text-emerald-600 font-bold text-xs shrink-0">✓</span>
                   }
                 </button>
               }
@@ -104,13 +90,44 @@
           }
         </div>
 
+        <!-- Dropdown ordenar -->
+        <div class="relative flex-1 md:w-40">
+          <button type="button"
+            class="w-full text-xs sm:text-sm border border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 bg-white text-gray-600 flex items-center justify-between gap-2 hover:border-emerald-400 transition-all cursor-pointer"
+            (click)="dropdownOrdenarAbierto = !dropdownOrdenarAbierto">
+            <span class="truncate text-left">{{ labelOrdenActivo }}</span>
+            <span class="text-gray-400 text-[10px] shrink-0">▾</span>
+          </button>
+
+          @if (dropdownOrdenarAbierto) {
+            <div class="absolute right-0 z-20 w-full sm:w-44 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden dropdown-animate">
+              @for (opcion of opcionesOrden; track opcion.valor) {
+                <button type="button"
+                  class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
+                  [class.text-emerald-600]="ordenActual === opcion.valor"
+                  [class.font-medium]="ordenActual === opcion.valor"
+                  [class.text-gray-700]="ordenActual !== opcion.valor"
+                  (click)="seleccionarOrden(opcion.valor)">
+                  <span class="truncate">{{ opcion.label }}</span>
+                  @if (ordenActual === opcion.valor) {
+                    <span class="text-emerald-500 text-xs shrink-0 ml-2">✓</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Botón Agregar-->
         <button
-          class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl transition-colors duration-150 shrink-0 cursor-pointer flex items-center gap-1.5"
+          class="hidden md:flex bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors duration-150 shrink-0 cursor-pointer items-center gap-1.5 shadow-sm shadow-emerald-500/10"
           (click)="abrirModal()">
           <lucide-icon [img]="icons.plus" class="w-3.5 h-3.5" color="currentColor"></lucide-icon>
           <span>Agregar</span>
         </button>
+
       </div>
+
     </div>
 
     <!-- Cuerpo -->
