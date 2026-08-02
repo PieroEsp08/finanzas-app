@@ -314,25 +314,40 @@
 <!-- Modal ingreso (Crear / Editar) -->
 @if (modalAbierto) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm overlay-animate" (click)="cerrarModal()"></div>
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm overlay-animate" 
+         (click)="!guardando && cerrarModal()"></div>
     <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden modal-animate">
 
+      <!-- Overlay de bloqueo mientras guarda -->
+      @if (guardando) {
+        <div class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center gap-3 rounded-2xl">
+          <div class="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-sm font-medium text-gray-600">
+            {{ editandoId ? 'Actualizando ingreso...' : 'Registrando ingreso...' }}
+          </p>
+        </div>
+      }
+
+      <!-- Header -->
       <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
         <div>
           <h3 class="text-base font-bold text-gray-900">{{ tituloModal }}</h3>
           <p class="text-xs text-gray-400 mt-0.5">Completa los campos para registrar</p>
         </div>
         <button
-          class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 cursor-pointer"
+          class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-400 cursor-pointer disabled:opacity-50"
+          [disabled]="guardando"
           (click)="cerrarModal()">✕</button>
       </div>
 
+      <!-- Campos -->
       <div class="px-6 py-5 space-y-4">
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Concepto</label>
           <input type="text" placeholder="Ej: Salario enero"
-            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="guardando"
             [(ngModel)]="nuevoConcepto">
         </div>
 
@@ -341,7 +356,8 @@
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">S/</span>
             <input type="number" placeholder="0.00"
-              class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all"
+              class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="guardando"
               [(ngModel)]="nuevoMonto">
           </div>
         </div>
@@ -350,7 +366,8 @@
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Categoría</label>
           <div class="relative">
             <button type="button"
-              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-left flex items-center justify-between hover:border-emerald-400 transition-all cursor-pointer"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-left flex items-center justify-between hover:border-emerald-400 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="guardando"
               (click)="dropdownModalAbierto = !dropdownModalAbierto">
               <span [class.text-gray-400]="!nuevaCategoria" [class.text-gray-700]="!!nuevaCategoria">
                 {{ labelCategoriaModal }}
@@ -378,7 +395,8 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1.5">Fecha</label>
           <input type="date"
-            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all text-gray-600"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="guardando"
             [(ngModel)]="nuevaFecha">
         </div>
 
@@ -387,20 +405,29 @@
             Notas <span class="text-gray-400">(opcional)</span>
           </label>
           <textarea placeholder="Agrega una nota..." rows="2"
-            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all resize-none"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/10 transition-all resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="guardando"
             [(ngModel)]="nuevasNotas"></textarea>
         </div>
 
       </div>
 
+      <!-- Footer -->
       <div class="px-6 pb-6 flex gap-3">
         <button
-          class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+          class="flex-1 border border-gray-200 text-gray-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="guardando"
           (click)="cerrarModal()">Cancelar</button>
         <button
-          class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer"
+          class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          [disabled]="guardando"
           (click)="guardarIngreso()">
-          {{ editandoId ? 'Guardar cambios' : 'Guardar ingreso' }}
+          @if (guardando) {
+            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            {{ editandoId ? 'Actualizando...' : 'Registrando...' }}
+          } @else {
+            {{ editandoId ? 'Guardar cambios' : 'Guardar ingreso' }}
+          }
         </button>
       </div>
 

@@ -2,6 +2,8 @@ import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, TrendingUp, Hash, BarChart2, LucideIconData, Pencil, Trash2, FileText, Plus } from 'lucide-angular';
+import { forkJoin } from 'rxjs';
+
 import { CardMetrica } from '../../../../shared/components/card-metrica/card-metrica';
 import { GraficoIngresos } from '../../components/grafico-ingresos/grafico-ingresos';
 import { TransaccionService } from '../../../../core/services/transaccion.service';
@@ -34,12 +36,13 @@ export class IngresosPage implements OnInit {
 
   // ── Estado ────────────────────────────────────────────────────
   cargando = true;
+  guardando = false;
   usuarioId = '';
   Math = Math;
 
   // ── Datos ─────────────────────────────────────────────────────
   ingresos: Transaccion[] = [];
-  categorias: Categoria[] = []; // Categorías activas traídas de la API
+  categorias: Categoria[] = [];
 
   // ── Filtros ───────────────────────────────────────────────────
   categoriaFiltro = 'todas';
@@ -74,12 +77,19 @@ export class IngresosPage implements OnInit {
   conceptoNota = '';
 
   // ── Lifecycle ─────────────────────────────────────────────────
-  async ngOnInit(): Promise<void> {
-    const { data } = await this.authService.getSession();
-    if (data.session) {
-      this.usuarioId = data.session.user.id;
-      this.cargarDatos();
-    }
+  ngOnInit(): void {
+    this.authService.getSession().then(({ data }) => {
+      if (data?.session?.user?.id) {
+        this.usuarioId = data.session.user.id;
+        this.cargarDatos();
+      } else {
+        this.cargando = false;
+        this.cdr.detectChanges();
+      }
+    }).catch(() => {
+      this.cargando = false;
+      this.cdr.detectChanges();
+    });
   }
 
   @HostListener('document:click', ['$event'])
@@ -94,18 +104,22 @@ export class IngresosPage implements OnInit {
 
   cargarDatos(): void {
     this.cargando = true;
+    this.cdr.detectChanges();
 
-    this.categoriaService.obtenerPorUsuarioYTipo(this.usuarioId, 'ingreso').subscribe({
-      next: (cats) => { this.categorias = cats; this.cdr.detectChanges(); },
-      error: (err) => console.error('Error cargando categorías:', err)
-    });
+    forkJoin({
+      categorias: this.categoriaService.obtenerPorUsuarioYTipo(this.usuarioId, 'ingreso'),
+      ingresos: this.transaccionService.obtenerPorTipo(this.usuarioId, 'ingreso')
+    }).subscribe({
+      next: (res) => {
+        this.categorias = Array.isArray(res.categorias) ? res.categorias : [];
+        this.ingresos = Array.isArray(res.ingresos) ? res.ingresos : [];
 
-    this.transaccionService.obtenerPorTipo(this.usuarioId, 'ingreso').subscribe({
-      next: (data) => { this.ingresos = data; this.cargando = false; this.cdr.detectChanges(); },
-      error: (err) => {
-        console.error('Error cargando ingresos:', err);
         this.cargando = false;
-        this.toastService.error('Error', 'No se pudieron cargar los ingresos');
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.toastService.error('Error', 'No se pudieron cargar los datos de ingresos');
+        this.cargando = false;
         this.cdr.detectChanges();
       }
     });
@@ -114,33 +128,27 @@ export class IngresosPage implements OnInit {
   // ── Getters ───────────────────────────────────────────────────
   get tituloModal(): string { return this.editandoId ? 'Editar ingreso' : 'Nuevo ingreso'; }
 
-  /**
-   * Genera dinámicamente la lista de categorías para el dropdown de FILTRADO.
-   * Incluye tanto las activas como aquellas eliminadas que aún están registradas en los ingresos.
-   */
   get categoriasParaFiltro(): (Categoria & { activa?: boolean })[] {
-  const mapaUnico = new Map<string, Categoria & { activa?: boolean }>();
+    const mapaUnico = new Map<string, Categoria & { activa?: boolean }>();
 
-  // 1. Cargar categorías activas
-  this.categorias.forEach(c => {
-    if (c.id) {
-      mapaUnico.set(String(c.id), { ...c, activa: true });
-    }
-  });
+    this.categorias.forEach(c => {
+      if (c.id) {
+        mapaUnico.set(String(c.id), { ...c, activa: true });
+      }
+    });
 
-  // 2. Extraer categorías presentes en los ingresos que ya fueron eliminadas
-  for (const ingreso of this.ingresos) {
-    const cat = this.getCategoria(ingreso.categoriaId, ingreso);
-    if (cat && cat.id && !mapaUnico.has(String(cat.id))) {
-      mapaUnico.set(String(cat.id), {
-        ...cat,
-        activa: false // Mantener el nombre original pero marcar inactiva
-      });
+    for (const ingreso of this.ingresos) {
+      const cat = this.getCategoria(ingreso.categoriaId, ingreso);
+      if (cat && cat.id && !mapaUnico.has(String(cat.id))) {
+        mapaUnico.set(String(cat.id), {
+          ...cat,
+          activa: false
+        });
+      }
     }
+
+    return Array.from(mapaUnico.values());
   }
-
-  return Array.from(mapaUnico.values());
-}
 
   get labelFiltroActivo(): string {
     if (this.categoriaFiltro === 'todas') return 'Todas las categorías';
@@ -171,12 +179,18 @@ export class IngresosPage implements OnInit {
     return resultado;
   }
 
+  get totalPaginas(): number { 
+    return Math.max(1, Math.ceil(this.ingresosFiltrados.length / this.registrosPorPagina)); 
+  }
+
   get ingresosPaginados(): Transaccion[] {
+    if (this.paginaActual > this.totalPaginas) {
+      this.paginaActual = this.totalPaginas;
+    }
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return this.ingresosFiltrados.slice(inicio, inicio + this.registrosPorPagina);
   }
 
-  get totalPaginas(): number { return Math.ceil(this.ingresosFiltrados.length / this.registrosPorPagina); }
   get paginas(): number[] { return Array.from({ length: this.totalPaginas }, (_, i) => i + 1); }
   get registrosMostrados(): number { return Math.min(this.paginaActual * this.registrosPorPagina, this.ingresosFiltrados.length); }
   get filasVacias(): number[] { return Array.from({ length: Math.max(this.registrosPorPagina - this.ingresosPaginados.length, 0) }, (_, i) => i); }
@@ -190,16 +204,13 @@ export class IngresosPage implements OnInit {
 
     const idStr = String(categoriaId);
 
-    // 1. Búsqueda flexible comparando como Strings en las activas
     const catActiva = this.categorias.find(c => String(c.id) === idStr);
     if (catActiva) return catActiva;
 
-    // 2. Si fue eliminada de la lista activa pero el backend mandó la categoría anidada
     if (ingreso?.categoria) {
       return ingreso.categoria;
     }
 
-    // 3. Fallback: Si el backend devolvió el nombre de la categoría mapeado en el ingreso
     if (ingreso?.categoriaNombre || ingreso?.nombreCategoria) {
       return {
         id: idStr,
@@ -241,7 +252,9 @@ export class IngresosPage implements OnInit {
     this.modalAbierto = false;
     this.editandoId = null;
     this.dropdownModalAbierto = false;
+    this.guardando = false;
     this.resetFormulario();
+    this.cdr.detectChanges();
   }
 
   resetFormulario(): void {
@@ -258,6 +271,9 @@ export class IngresosPage implements OnInit {
       return;
     }
 
+    this.guardando = true;
+    this.cdr.detectChanges();
+
     const ingreso: Transaccion = {
       usuarioId: this.usuarioId,
       categoriaId: this.nuevaCategoria,
@@ -271,49 +287,48 @@ export class IngresosPage implements OnInit {
     if (this.editandoId) {
       this.transaccionService.actualizar(this.editandoId, ingreso).subscribe({
         next: () => {
+          this.guardando = false; 
           this.cerrarModal();
           this.cargarDatos();
           this.toastService.success('Ingreso actualizado', `Se guardaron los cambios para "${ingreso.concepto}"`);
         },
-        error: (err) => {
-          console.error('Error actualizando ingreso:', err);
+        error: () => {
+          this.guardando = false; 
+          this.cdr.detectChanges();
           this.toastService.error('Error al actualizar', 'No se pudieron guardar los cambios');
         }
       });
     } else {
       this.transaccionService.crear(ingreso).subscribe({
         next: () => {
+          this.guardando = false; 
           this.cerrarModal();
           this.cargarDatos();
           this.toastService.success('Ingreso registrado', `Se agregó S/ ${ingreso.monto.toLocaleString('es-PE')} correctamente`);
         },
-        error: (err) => {
-          console.error('Error creando ingreso:', err);
+        error: () => {
+          this.guardando = false; 
+          this.cdr.detectChanges();
           this.toastService.error('Error al guardar', 'No se pudo registrar el ingreso');
         }
       });
     }
   }
 
-  /**
-   * Eliminación con acción reversible (Snackbar DESHACER)
-   */
   abrirModalEliminar(ingreso: Transaccion): void {
     if (!ingreso.id) return;
 
     const idEliminar = ingreso.id;
     let cancelado = false;
 
-    // 1. Quitarlo visualmente de la lista local
     const respaldoIngresos = [...this.ingresos];
     this.ingresos = this.ingresos.filter(t => t.id !== idEliminar);
+    this.cdr.detectChanges();
 
-    // 2. Disparar el Snackbar reversible de core
     this.toastService.showUndo(
       'Ingreso eliminado',
       `"${ingreso.concepto}" se eliminó del historial.`,
       () => {
-        // Callback si el usuario presiona "DESHACER"
         cancelado = true;
         this.ingresos = respaldoIngresos;
         this.cdr.detectChanges();
@@ -322,12 +337,10 @@ export class IngresosPage implements OnInit {
       6000
     );
 
-    // 3. Confirmar la eliminación en la API si pasaron los 6s y no presiono DESHACER
     setTimeout(() => {
       if (!cancelado) {
         this.transaccionService.eliminar(idEliminar).subscribe({
-          error: (err) => {
-            console.error('Error eliminando ingreso:', err);
+          error: () => {
             this.ingresos = respaldoIngresos;
             this.toastService.error('Error', 'No se pudo eliminar el registro en el servidor');
             this.cdr.detectChanges();
